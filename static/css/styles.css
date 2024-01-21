@@ -141,3 +141,18 @@ option{
         width: 90%;
     }
 }
+
+
+/* Add or modify your CSS for flash messages */
+.flash {
+    color: red;
+    border: 1px solid red;  /* Add a border for better visibility */
+    padding: 10px;         /* Add padding for better appearance */
+    margin-bottom: 10px;   /* Add margin for spacing between messages */
+    z-index: 999;          /* Set a high z-index to make it appear in front */
+    position: relative;    /* Set position to relative for z-index to take effect */
+    /* Add any other styling properties you want */
+  }
+
+  
+  
