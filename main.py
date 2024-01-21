@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, flash
 from passwords import *
+from allZipcode import * 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secret
 
