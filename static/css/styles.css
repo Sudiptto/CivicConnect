@@ -68,6 +68,12 @@ body {
     background-color: white;
     color: navyblue;
 }
+.lukeLogo{
+    text-align: center;
+    border-radius: 25px;
+    background-color: white;
+    color: navyblue;
+}
 
 /* FORM FIELDS BELOW */
 .form-fields {
@@ -125,6 +131,10 @@ button:hover{
     padding: 8px;
 }
 
+select{
+    font-size: 20px;
+    color: navy;
+}
 option{
     color: navy;
     font-size: 15px;
@@ -143,16 +153,7 @@ option{
 }
 
 
-/* Add or modify your CSS for flash messages */
-.flash {
-    color: red;
-    border: 1px solid red;  /* Add a border for better visibility */
-    padding: 10px;         /* Add padding for better appearance */
-    margin-bottom: 10px;   /* Add margin for spacing between messages */
-    z-index: 999;          /* Set a high z-index to make it appear in front */
-    position: relative;    /* Set position to relative for z-index to take effect */
-    /* Add any other styling properties you want */
-  }
+
 
   
   

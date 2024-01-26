@@ -1,7 +1,7 @@
 import pandas as pd
 from allZipcode import *
 import time
-# Strategy
+# FUNCTIONS BELOW 
 """
 Collect all zipcode data with state data
 Put this data in a hashmap -> look ups will be O(1) complexity and will be used to verify that the data exists and that the state matches the zipcode provided for added credibility 
@@ -22,12 +22,18 @@ for index, row in df.iterrows():
 print(zipcode_Data)"""
 
 # analyze the hashmap -> Note for 1/20 -> Further analyze the hashmap and check if the state value matches 
-
-def searchFind(zip, target):
-    if target in zip:
-        return 'Found'
+def searchAndVerify(zipData, zipCode, state):
+    if zipCode in zipData:
+        if zipData[zipCode] == state:
+            return 'Correct state!'
+        else:
+            return 'Invalid state and zip combo'
     else:
         return 'Not Found'
     
-print(searchFind(zipcodeData, 11218))
-print(searchFind(zipcodeData, 11200))
+print(searchAndVerify(zipcodeData, 11218, 'NY'))
+print(searchAndVerify(zipcodeData, 11218, 'WY'))
+print(searchAndVerify(zipcodeData, 11200, 'NY'))
+
+
+# Note for future: analysis on the length of zipcode, only consider the zipcodes whos lengths are 5 to be eligible and the zipcodes whos lengths are 4 or not 5 to uneligible 
