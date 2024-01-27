@@ -2,7 +2,10 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Times New Roman', serif;
-    background-color: #000; /* Dark black background */
+    background-image: url('/static/images/img5.png'); /* https://placesjournal.org/wp-content/uploads/2020/06/Anti-Racism-Statement-lead-image.jpg */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  background-size: cover;
     color: #fff; /* Set text color to white */
   }
   
@@ -51,6 +54,9 @@ body {
     color: #000; /* Set your preferred text color */
   }
   
+  .cause-item:hover{
+    font-size: 25px;
+  }
   input[type="radio"] {
     margin-right: 10px;
   }

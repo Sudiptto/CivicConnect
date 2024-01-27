@@ -6,7 +6,7 @@ import time
 Collect all zipcode data with state data
 Put this data in a hashmap -> look ups will be O(1) complexity and will be used to verify that the data exists and that the state matches the zipcode provided for added credibility 
 """
-# Data turned into a hashmap 
+# Data turned into a hashmap (dictionary)
 """zipcode_Data = {}
 
 df = pd.read_csv('geo-data.csv')
