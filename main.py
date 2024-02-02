@@ -18,8 +18,13 @@ def home():
         if validateZipState == 'Correct state!':
             #print('test')
             flash('Correct Move on!', category='error')
+
+            
             session['valid_zip_state'] = True
             session['first_name'] = first_name  
+            session['ZipCode'] = zip_code
+            session['state'] = state
+
             return redirect(url_for('causes'))
         
         elif validateZipState == 'Invalid state and zip combo':
@@ -33,13 +38,25 @@ def home():
 
     return render_template('home.html')
 
+# this is the causes page 
 @app.route('/causes')
 def causes():
     if not session.get('valid_zip_state'):
         #print('activated')
+
         return render_template('error.html')
+
     first_name = session.get('first_name')
-    return render_template('causes.html', firstName = first_name)
+    zipCode = session.get('ZipCode') #  integer
+    state = session.get('state') 
+
+    nameList = senateANDhouseNames(state, zipCode)
+    emailList = senateAndhouseEmails(state, zipCode)
+
+    return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList)
+
+# THIS PAGE -> Users can add / update their queries
+
 
 if __name__ == '__main__':
     #app.run(host=ip, port=5500) #-> for local testing 

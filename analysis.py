@@ -1,5 +1,7 @@
+# note this is the final for analysing data and then posting it to the main python file 
 import pandas as pd
 from allZipcode import *
+from data import *
 import time
 # FUNCTIONS BELOW 
 """
@@ -31,9 +33,41 @@ def searchAndVerify(zipData, zipCode, state):
     else:
         return 'Not Found'
     
-print(searchAndVerify(zipcodeData, 11218, 'NY'))
+"""print(searchAndVerify(zipcodeData, 11218, 'NY'))
 print(searchAndVerify(zipcodeData, 11218, 'WY'))
-print(searchAndVerify(zipcodeData, 11200, 'NY'))
+print(searchAndVerify(zipcodeData, 11200, 'NY'))"""
+
+# GRAB SENATE AND HOUSE NAMES 
+# the first two names are senators 
+def senateANDhouseNames(state, zipCode):
+    names = []
+    
+    # SENATE NAMES
+    senateNames = senateData[state]
+    names.extend(senateNames)
+    # House names
+    houseNames = represenativeNames(zipCode)
+    names.extend(houseNames)
+
+    return names 
+
+# SENATE AND HOUSE EMAIL ADDRESSES 
+def senateAndhouseEmails(state, zipCode):
+    emails = []
+
+    # senate emails
+    senateEmails = senatorData[state]
+    emails.extend(senateEmails)
+
+    # house emails 
+    houseEmails = getHouseEmails(zipCode)
+    emails.extend(houseEmails)
+
+    return emails
+
+
+#print(senateAndhouseEmails('NY', 11218)) 
+#print(senateANDhouseNames('NY', '11218'))
 
 
 # Note for future: analysis on the length of zipcode, only consider the zipcodes whos lengths are 5 to be eligible and the zipcodes whos lengths are 4 or not 5 to uneligible 

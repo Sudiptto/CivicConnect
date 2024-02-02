@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles2.css') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
   <title>CAUSES</title>
 </head>
 <body>
@@ -12,7 +13,7 @@
       <h1 class="heading">Hi {{firstName}} please pick a cause!</h1>
       <p style="color:black;">Prompts researched and written by <a href="https://www.linkedin.com/in/lukecorless/">Luke Corless</a></p>
       <div class="causes-list">
-        <label class="cause-item" onclick="openModal('Environmental Protection', 'Details about Environmental Protection {{firstName}}. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.')">
+        <label class="cause-item" onclick="openModal('Environmental Protection', '<b> Your represenatives: </b> {% for name in nameList %} {{name}}, {% endfor %} <br> <b> Email Addresses: </b> {% for email in emailList %} {{email}} {% endfor %}<br> <br> Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.')">
           <input type="radio" name="cause" value="environmental-protection"> Environmental Protection
         </label>
         <label class="cause-item" onclick="openModal('Free Palestine', 'Details about Free Palestine ' +  '{{firstName}}.' + ' Filler text: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')">
@@ -27,6 +28,9 @@
         <!-- Add more causes as needed -->
       </div>
       <button class="submit-button">Submit</button>
+
+      <p style="color: black;">See a cause you support but don't see? Want to modify one of the prompts?</p>
+      <button class="submit-button2" >EMAIL US!</button>
     </div>
 
     </div>
