@@ -19,7 +19,13 @@
 
   <div class="form-container">
     <form class="animated-form" method="POST">
-      <h1 class="header" id="civicConnect">ERROR: <a href="/" style="color: darkred;">HOME PAGE</a> NOT FILLED OUT</h1>
+      {% if errorMessage == 'Incomplete' %}
+            <h1 class="header" id="civicConnect">ERROR: <a href="/" style="color: darkred;">HOME PAGE</a> NOT FILLED OUT</h1>
+      {% endif %}
+
+      {%if errorMessage =='NoSubmit'%}
+            <h1 class="header" id="civicConnect">ERROR: <a href="/causes" style="color: darkred;">CAUSES PAGE</a> NOT SUBMITTED</h1>
+      {%endif%}
       
   </div>
 
