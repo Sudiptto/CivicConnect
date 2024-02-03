@@ -11,15 +11,20 @@ def home():
         # Access form data
         first_name = request.form['firstName']
         last_name = request.form['lastName']
-        zip_code = int(request.form['zipCode']) # turn to integer
+        zip_code = request.form['zipCode'] # turn to integer -> after we check if its numeric 
         state = request.form['state']
+
+        # VALIDATE IS ZIPCODE IS NUMERIC
+        if zip_code.isnumeric() == False:
+            flash("Please enter a valid 5 DIGIT INTEGER zipcode", category="error")
+
+        zip_code = int(zip_code)
+
         # VALIDATE BOTH ZIP AND CITY DATA 
         validateZipState = searchAndVerify(zipcodeData, zip_code, state) 
         if validateZipState == 'Correct state!':
             #print('test')
             flash('Correct Move on!', category='error')
-
-            
             session['valid_zip_state'] = True
             session['first_name'] = first_name  
             session['ZipCode'] = zip_code
@@ -39,10 +44,9 @@ def home():
     return render_template('home.html')
 
 # this is the causes page 
-@app.route('/causes')
+@app.route('/causes',  methods=['GET', 'POST'])
 def causes():
     if not session.get('valid_zip_state'):
-        #print('activated')
 
         return render_template('error.html')
 
@@ -53,11 +57,36 @@ def causes():
     nameList = senateANDhouseNames(state, zipCode)
     emailList = senateAndhouseEmails(state, zipCode)
 
+
+    # NOTE WORKS -> REDIRECT TO AN EMAIL route (final route )
+    if request.method == 'POST':
+        cause = request.form['cause']
+        print(cause)
+
     return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList)
 
+
+@app.route('/email')
+def email():
+    if not session.get('valid_zip_state'):
+        return render_template('error.html')
+    
+    return render_template('email.html')
+
 # THIS PAGE -> Users can add / update their queries
+@app.route('/queries')
+def queries():
+    if not session.get('valid_zip_state'):
+        return render_template('error.html')
+    
+    first_name = session.get('first_name')
+    zipCode = session.get('ZipCode') #  integer
+    state = session.get('state') 
+
+    return render_template('queries.html', firstName=first_name)
+
 
 
 if __name__ == '__main__':
-    #app.run(host=ip, port=5500) #-> for local testing 
+    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
     app.run(debug=True)

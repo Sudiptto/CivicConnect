@@ -12,25 +12,29 @@
     <div class="content-box">
       <h1 class="heading">Hi {{firstName}} please pick a cause!</h1>
       <p style="color:black;">Prompts researched and written by <a href="https://www.linkedin.com/in/lukecorless/">Luke Corless</a></p>
-      <div class="causes-list">
-        <label class="cause-item" onclick="openModal('Environmental Protection', '<b> Your represenatives: </b> {% for name in nameList %} {{name}}, {% endfor %} <br> <b> Email Addresses: </b> {% for email in emailList %} {{email}} {% endfor %}<br> <br> Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.')">
-          <input type="radio" name="cause" value="environmental-protection"> Environmental Protection
-        </label>
-        <label class="cause-item" onclick="openModal('Free Palestine', 'Details about Free Palestine ' +  '{{firstName}}.' + ' Filler text: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')">
-          <input type="radio" name="cause" value="free-palestine"> Free Palestine
-        </label>
-        <label class="cause-item" onclick="openModal('Racial Redlining', 'Details about Racial Redlining. Filler text: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.')">
-          <input type="radio" name="cause" value="racial-redlining"> Racial Redlining
-        </label>
-        <label class="cause-item" onclick="openModal('Poverty', 'Details about Poverty. Filler text: Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')">
-          <input type="radio" name="cause" value="poverty"> Poverty
-        </label>
-        <!-- Add more causes as needed -->
-      </div>
-      <button class="submit-button">Submit</button>
 
+      <form method="POST">
+        <div class="causes-list">
+          <label class="cause-item" onclick="openModal('Environmental Protection', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.')">
+              <input type="radio" name="cause" value="environmental-protection" required> Environmental Protection
+          </label>
+          <label class="cause-item" onclick="openModal('Free Palestine', 'Details about Free Palestine. Filler text: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')">
+              <input type="radio" name="cause" value="free-palestine" required> Free Palestine
+          </label>
+          <label class="cause-item" onclick="openModal('Racial Redlining', 'Details about Racial Redlining. Filler text: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.')">
+              <input type="radio" name="cause" value="racial-redlining" required> Racial Redlining
+          </label>
+          <label class="cause-item" onclick="openModal('Poverty', 'Details about Poverty. Filler text: Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')">
+              <input type="radio" name="cause" value="poverty" required> Poverty
+          </label>
+          <!-- Add more causes as needed -->
+      </div>
+      
+      <button class="submit-button">Submit</button>
+      <!--<a href="mailto:someone@yoursite.com?subject=Mail from Our Site">Email Us</a>  -->
+    </form>
       <p style="color: black;">See a cause you support but don't see? Want to modify one of the prompts?</p>
-      <button class="submit-button2" >EMAIL US!</button>
+      <a href="{{ url_for('queries') }}" class="submit-button2">EMAIL US!</a>
     </div>
 
     </div>
@@ -43,6 +47,7 @@
       <div id="modalContent"></div>
     </div>
   </div>
+
 
   <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 </body>
