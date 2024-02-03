@@ -58,32 +58,37 @@ def causes():
     nameList = senateANDhouseNames(state, zipCode)
     emailList = senateAndhouseEmails(state, zipCode)
 
+    # create new session for emailList
 
+    session['emailList'] = emailList
     # NOTE WORKS -> REDIRECT TO AN EMAIL route (final route )
     if request.method == 'POST':
         
         cause = request.form['cause']
-        causeDescription = ""
+        causeSubject = ""
         # fill out the prompts -> check the prompts.py file 
         if cause == 'environmental-protection':
-            causeDescription = environmental_protection
+            causeSubject = 'Enviornmental Protection'
 
         if cause == 'free-palestine':
-            causeDescription = free_palestine
+            causeSubject = 'Free Palestine'
 
         if cause == 'racial-redlining':
-            causeDescription = racial_redlining
+            causeSubject = 'Racial Redlining'
 
         if cause == 'poverty':
-            causeDescription = poverty
+            causeSubject = 'Poverty'
+
         # SESSION FOR EMAIL ROUTE 
         session['validSubmit'] = True
-        return redirect(url_for('email', emailList = emailList))
+        session['causeSubject'] = causeSubject
+        return redirect(url_for('email'))
 
     return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList)
 
 
-@app.route('/email')
+# works
+@app.route('/email', methods=['GET', 'POST'])
 def email():
     if not session.get('valid_zip_state'):
         errorMessage = 'Incomplete'
@@ -93,7 +98,16 @@ def email():
         errorMessage = 'NoSubmit'
         return render_template('error.html', errorMessage = errorMessage)  
 
-    return render_template('email.html')
+    # grab all information: 
+    first_name = session.get('first_name')
+    zipCode = session.get('ZipCode') #  integer
+    state = session.get('state')
+    emailList = session.get('emailList')
+    subject = session.get('causeSubject')
+    prompt =subjectPrompt(subject)
+
+
+    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt)
 
 # THIS PAGE -> Users can add / update their queries
 @app.route('/queries')
@@ -101,11 +115,8 @@ def queries():
     if not session.get('valid_zip_state'):
         errorMessage = 'Incomplete'
         return render_template('error.html', errorMessage=errorMessage)
-    
-    first_name = session.get('first_name')
-    zipCode = session.get('ZipCode') #  integer
-    state = session.get('state') 
 
+    first_name = session.get('first_name')
     return render_template('queries.html', firstName=first_name)
 
 

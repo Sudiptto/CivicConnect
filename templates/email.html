@@ -2,9 +2,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send email</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles3.css') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <title>Email</title>
 </head>
 <body>
-    
-</body>
-</html>
+    <div class="container">
+      <div class="content-box">
+
+            <h1 class="heading">Hello {{firstName}}, please read over the email!</h1>
+
+                <!-- Recipients -->
+                <div>
+                    <h3 style="color: #000; margin-bottom: 5px;">Recipients:</h3>
+                    <p class="emailAddresses">
+                        {{ ', '.join(emailList) }}
+                    </p>
+                    
+                </div>
+        
+                <!-- Subject -->
+                <div>
+                    <h3 style="color: #000; margin-bottom: 5px;">Subject:</h3>
+                    <p class="subject">
+                        {{subject}}
+                    </p>
+                </div>
+        
+                <!-- Message -->
+                <div>
+                    <h3 style="color: #000; margin-bottom: 5px;">Message:</h3>
+                    <p class="messageEmail">
+                       {{prompt}}
+                    </p>
+                </div>
+                <!--SEND THE MAIL-->
+                <a href="mailto:{{ ', '.join(emailList) }}?subject={{subject}}&subject={{subject}}&body={{prompt}}" class="send-email-button">Send Email</a>
+        </div>
+      </div>
+    </div>
+  
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+  </body>
+  </html>

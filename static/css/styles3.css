@@ -186,4 +186,49 @@ select {
     resize: both; 
     width: 100%; 
     font-family: 'Times New Roman', serif;
+    border: solid;
   }
+
+  .emailAddresses{
+    background-color: white; 
+    color: black; 
+    height: 40px; 
+    border: solid;
+    overflow-y: auto;
+  }
+
+  .subject{
+    color: black;
+    border: solid;
+    
+  }
+
+  .messageEmail{
+    background-color: white; 
+    color: black; 
+    padding: 10px; 
+    height: 200px; 
+    border: solid;
+    overflow-y: auto;
+  }
+
+  /* Add this to your existing CSS */
+.send-email-button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  background-color: #3498db; /* Default button color */
+  color: #fff; /* Button text color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s, font-size 0.3s; /* Hover transition effects */
+}
+
+.send-email-button:hover {
+  background-color: #2980b9; /* Hovered button color */
+  transform: scale(1.05); /* Increased size on hover */
+  font-size: 18px; /* Increased font size on hover */
+}
