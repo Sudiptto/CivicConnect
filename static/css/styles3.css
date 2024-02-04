@@ -162,17 +162,20 @@ select {
     font-size: 16px; /* Set the font size */
     border: none; /* Remove default border */
     border-radius: 5px; /* Add border radius for a rounded appearance */
-    background-color: black; /* Set background color to black */
-    color: white; /* Set text color to white */
+    background-color: white; /* Set background color to black */
+    color: black; /* Set text color to white */
     cursor: pointer; /* Set cursor to pointer for better interaction */
+    border: solid;
+    
   }
   
   /* Style the options within the select element */
   select option {
     font-size: 16px; /* Set font size for options */
-    background-color: black; /* Set background color to black */
-    color: white; /* Set text color to white */
+    background-color: white; /* Set background color to black */
+    color: black; /* Set text color to white */
     transition: background-color 0.3s, color 0.3s; /* Hover transition effects */
+    font-family: 'Times New Roman', serif;
   }
   
   /* Hover effect for options */
@@ -186,6 +189,7 @@ select {
     resize: both; 
     width: 100%; 
     font-family: 'Times New Roman', serif;
+    font-size: 16px;
     border: solid;
   }
 
@@ -195,6 +199,7 @@ select {
     height: 40px; 
     border: solid;
     overflow-y: auto;
+    
   }
 
   .subject{
@@ -231,4 +236,34 @@ select {
   background-color: #2980b9; /* Hovered button color */
   transform: scale(1.05); /* Increased size on hover */
   font-size: 18px; /* Increased font size on hover */
+}
+
+
+.exitButton{
+  display: inline-block;
+  padding: 10px 20px;
+  margin-top: 10px;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  background-color: darkred; /* Default button color */
+  color: #fff; /* Button text color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s, font-size 0.3s; /* Hover transition effects */
+
+}
+
+.exitButton:hover {
+  background-color: darkred; /* Hovered button color */
+  transform: scale(1.05); /* Increased size on hover */
+  font-size: 18px; /* Increased font size on hover */
+}
+
+.emailForm{
+  width: 80%;
+  font-size: 18px;
+  font-family: 'Times New Roman', serif;
+  border: solid;
 }

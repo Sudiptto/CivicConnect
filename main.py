@@ -1,10 +1,27 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session 
+from flask_mail import Mail, Message
+import secrets
 from passwords import *
 from allZipcode import * 
 from analysis import * 
 from prompts import *
+
+# initilize everything
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secret
+mail = Mail(app)
+
+# Configure Flask-Mail settings
+app.config["MAIL_SERVER"] = 'smtp.gmail.com'
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_USE_TLS"] = False
+app.config["MAIL_USE_SSL"] = True
+app.config["MAIL_USERNAME"] = emailName
+app.config["MAIL_PASSWORD"] = emailPassword
+app.config["MAIL_DEFAULT_SENDER"] = 'your_email@example.com'
+mail.init_app(app)
+token_data = {}
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -84,7 +101,7 @@ def causes():
         session['causeSubject'] = causeSubject
         return redirect(url_for('email'))
 
-    return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList)
+    return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList, allPrompts = allPrompts)
 
 
 # works
@@ -110,16 +127,108 @@ def email():
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt)
 
 # THIS PAGE -> Users can add / update their queries
-@app.route('/queries')
+@app.route('/queries', methods=['POST', 'GET'])
 def queries():
     if not session.get('valid_zip_state'):
         errorMessage = 'Incomplete'
         return render_template('error.html', errorMessage=errorMessage)
 
+    if request.method == 'POST':
+        selectOption = request.form['emailReason']
+        email = request.form['email']
+        promptCritique = request.form['critique']
+
+
+        # verify if the email address is valid 
+        # Generate a unique token
+        verification_token = secrets.token_hex(16)
+
+        # Store the token and associated data in the dictionary
+        token_data[verification_token] = {
+            'email': email,
+            'selectOption': selectOption,
+            'promptCritique': promptCritique
+        }
+
+        # Redirect to the route responsible for sending the email
+        return redirect(url_for('send_verification_email_route', email=email, token=verification_token))
+    
+
     first_name = session.get('first_name')
     return render_template('queries.html', firstName=first_name)
 
 
+
+
+# EXIT ROUTE -> WORKS
+@app.route('/exit', methods=['POST'])
+def exit():
+    if request.method == 'POST':
+        session.clear()
+        return redirect(url_for('home'))
+    return redirect(url_for('home'))
+
+
+# VERIFY EMAIL
+@app.route('/generate_token_and_send_email', methods=['POST'])
+def generate_token_and_send_email():
+    if request.method == 'POST':
+        # Access form data
+        email = request.form['email']
+        selectOption = request.form['emailReason']
+        promptCritique = request.form['critique']
+        # Generate a unique token
+        verification_token = secrets.token_hex(16)
+
+        # Store the token and associated data in the dictionary
+        token_data[verification_token] = {
+            'email': email,
+            'selectOption': selectOption,
+            'promptCritique': promptCritique
+        }
+
+        # Redirect to the route responsible for sending the email
+        return redirect(url_for('send_verification_email_route', email=email, token=verification_token))
+
+
+@app.route('/send_verification_email/<email>/<token>', methods=['GET'])
+def send_verification_email_route(email, token):
+    verification_data = token_data.get(token, {})
+    optionChosen = verification_data.get('selectOption')
+    promptCritique = verification_data.get('promptCritique')
+    send_verification_email(email, token, optionChosen, promptCritique)
+    flash('Verification link sent to your email.', category='info')
+
+    return redirect(url_for('home'))
+
+
+# NOTE ADD THE USER PROMPTS HERE
+def send_verification_email(email, token, optionChosen, promptCritique):
+    subject = 'Verify Your Email for Query'
+    verification_link = url_for('verify_email', token=token, _external=True)
+
+    body = f'Click the following link to verify your email: {verification_link} <br> <b>Here is your inputs:</b> <br> <p>Option chosen: {optionChosen} <br> {promptCritique} '
+
+    msg = Message(subject, recipients=[email], html=body)
+    mail.send(msg)
+
+
+@app.route('/verify_email/<token>', methods=['GET'])
+def verify_email(token):
+    # Check if the token is in the dictionary
+    if token in token_data:
+        # Retrieve data associated with the token
+        data = token_data.pop(token)
+
+        # Set a session variable to indicate email verification
+        session['email_verified'] = True
+        session['email'] = data['email']
+
+        flash('Email verified.', category='success')
+    else:
+        flash('Invalid or expired verification link.', category='error')
+
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     #app.run(host=ip, port=5500, debug=True) #-> for local testing 

@@ -12,19 +12,19 @@
     <div class="content-box">
       <h1 class="heading">Hi {{firstName}} please pick a cause!</h1>
       <p style="color:black;">Prompts researched and written by <a href="https://www.linkedin.com/in/lukecorless/">Luke Corless</a></p>
-
+      <!--FOR PROMPTS GO TO prompts.py-->
       <form method="POST">
         <div class="causes-list">
-          <label class="cause-item" onclick="openModal('Environmental Protection', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Details about Environmental Protection. Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.')">
+          <label class="cause-item" onclick="openModal('Environmental Protection', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[0]}}')">
               <input type="radio" name="cause" value="environmental-protection" required> Environmental Protection
           </label>
-          <label class="cause-item" onclick="openModal('Free Palestine', 'Details about Free Palestine. Filler text: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')">
+          <label class="cause-item" onclick="openModal('Free Palestine', '{{allPrompts[1]}}')">
               <input type="radio" name="cause" value="free-palestine" required> Free Palestine
           </label>
-          <label class="cause-item" onclick="openModal('Racial Redlining', 'Details about Racial Redlining. Filler text: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.')">
+          <label class="cause-item" onclick="openModal('Racial Redlining', '{{allPrompts[2]}}')">
               <input type="radio" name="cause" value="racial-redlining" required> Racial Redlining
           </label>
-          <label class="cause-item" onclick="openModal('Poverty', 'Details about Poverty. Filler text: Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')">
+          <label class="cause-item" onclick="openModal('Poverty', '{{allPrompts[3]}}')">
               <input type="radio" name="cause" value="poverty" required> Poverty
           </label>
           <!-- Add more causes as needed -->

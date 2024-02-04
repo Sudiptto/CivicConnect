@@ -7,6 +7,7 @@ free_palestine = "Filler text: Lorem ipsum dolor sit amet, consectetur adipiscin
 racial_redlining = "Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 poverty = "Filler text: Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 
+allPrompts = [environmental_protection, free_palestine, racial_redlining, poverty]
 
 # function for all the PROMPTS FROM SUBJECT 
 

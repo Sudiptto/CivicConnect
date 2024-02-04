@@ -37,7 +37,12 @@
                     </p>
                 </div>
                 <!--SEND THE MAIL-->
-                <a href="mailto:{{ ', '.join(emailList) }}?subject={{subject}}&subject={{subject}}&body={{prompt}}" class="send-email-button">Send Email</a>
+                <a href="mailto:{{ ', '.join(emailList) }}?subject={{subject}}&subject={{subject}}&body={{prompt}}" class="send-email-button" action="/">Send Email</a>
+                <br>
+                <form method="POST" action="{{ url_for('exit') }}">
+                    <button class="exitButton" href="/exit">Exit</button>
+                </form>
+                <p style="color: black; font-size: small;">Note: If your email provider isn't working than please copy and paste the information.</p>
         </div>
       </div>
     </div>
