@@ -204,6 +204,7 @@ def send_verification_email_route(email, token):
 
 # NOTE ADD THE USER PROMPTS HERE
 def send_verification_email(email, token, optionChosen, promptCritique):
+    # to send the verification email 
     subject = 'Verify Your Email for Query'
     verification_link = url_for('verify_email', token=token, _external=True)
 
@@ -211,7 +212,7 @@ def send_verification_email(email, token, optionChosen, promptCritique):
 
     msg = Message(subject, recipients=[email], html=body)
     mail.send(msg)
-
+    
 
 @app.route('/verify_email/<token>', methods=['GET'])
 def verify_email(token):
@@ -219,12 +220,21 @@ def verify_email(token):
     if token in token_data:
         # Retrieve data associated with the token
         data = token_data.pop(token)
-
+        print(data)
         # Set a session variable to indicate email verification
         session['email_verified'] = True
         session['email'] = data['email']
 
+        promptCritique = data['promptCritique']
+        optionChosen = data['selectOption']
+        email = data['email']
+
         flash('Email verified.', category='success')
+        # send the prompt email to us -> only after verification
+        subject = f'User Prompt: {optionChosen}'
+        body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'
+        msg2 = Message(subject, sender=data['email'], recipients=[emailName], html=body)
+        mail.send(msg2)
     else:
         flash('Invalid or expired verification link.', category='error')
 
