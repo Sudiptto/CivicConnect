@@ -154,6 +154,13 @@ body {
   }
 }
 
+@media screen and (max-width: 600px){
+
+  .container{
+    height: 120vh;
+  }
+}
+
 
 /* Style the select element */
 select {
@@ -266,4 +273,18 @@ select {
   font-size: 18px;
   font-family: 'Times New Roman', serif;
   border: solid;
+}
+
+/* FOR THE MESSAGES */
+/* Style for the message container */
+.message-container {
+  max-height: 300px; /* Set maximum height for the container */
+  overflow-y: auto; /* Enable vertical scrollbar if content exceeds container height */
+  padding: 10px; /* Add some padding for better appearance */
+  border: 1px solid #ccc; /* Add border for visual separation */
+}
+
+/* Style for the message text */
+.message-text {
+  font-size: 14px; /* Set font size to make text smaller */
 }

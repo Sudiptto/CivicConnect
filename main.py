@@ -6,6 +6,7 @@ from allZipcode import *
 from analysis import * 
 from prompts import *
 
+
 # initilize everything
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secret
@@ -42,8 +43,10 @@ def home():
         validateZipState = searchAndVerify(zipcodeData, zip_code, state) 
         if validateZipState == 'Correct state!':
             #print('test')
-            flash('Correct Move on!', category='error')
+            #flash('Correct Move on!', category='error')
             session['valid_zip_state'] = True
+
+            # Encrypt -> First Name, Last Name and Email  -> use sha256 
             session['first_name'] = first_name  
             session['ZipCode'] = zip_code
             session['state'] = state
@@ -75,8 +78,9 @@ def causes():
     nameList = senateANDhouseNames(state, zipCode)
     emailList = senateAndhouseEmails(state, zipCode)
 
-    # create new session for emailList
-
+    #print(emailList)
+    # create new session for emailList and nameList 
+    session['nameList'] = nameList 
     session['emailList'] = emailList
     # NOTE WORKS -> REDIRECT TO AN EMAIL route (final route )
     if request.method == 'POST':
@@ -101,7 +105,8 @@ def causes():
         session['causeSubject'] = causeSubject
         return redirect(url_for('email'))
 
-    return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList, allPrompts = allPrompts)
+    # check prompts.py for getAllPrompts()
+    return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList, allPrompts = getAllPrompts(first_name, nameList))
 
 
 # works
@@ -119,9 +124,12 @@ def email():
     first_name = session.get('first_name')
     zipCode = session.get('ZipCode') #  integer
     state = session.get('state')
+    # email and name 
     emailList = session.get('emailList')
+    nameList = session.get('nameList')
+    # subject and prompt 
     subject = session.get('causeSubject')
-    prompt =subjectPrompt(subject)
+    prompt =subjectPrompt(subject,first_name,nameList)
 
 
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt)
@@ -241,5 +249,5 @@ def verify_email(token):
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
-    app.run(debug=True)
+    app.run(host=ip, port=5500, debug=True) #-> for local testing 
+    #app.run(debug=True)
