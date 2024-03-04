@@ -35,6 +35,7 @@ body {
   .heading {
     font-size: 25px;
     color: #000; /* Set your preferred heading color */
+    margin: 0;
   }
   .heading:hover{
     font-size: 30px;
@@ -282,9 +283,29 @@ select {
   overflow-y: auto; /* Enable vertical scrollbar if content exceeds container height */
   padding: 10px; /* Add some padding for better appearance */
   border: 1px solid #ccc; /* Add border for visual separation */
+  color: white;
+  background-color: black;
 }
 
 /* Style for the message text */
 .message-text {
   font-size: 14px; /* Set font size to make text smaller */
+  color: white;
+
+}
+
+@media screen and (max-width: 768px) {
+  .heading {
+    margin-top: 25px;
+      font-size: 20px; /* Adjust heading font size for smaller screens */
+      padding: -5px; /* Adjust padding for smaller screens */
+  }
+  .content-box {
+      padding: 5px; /* Adjust padding for smaller screens */
+  }
+  .emailAddresses,
+  .subject,
+  .message-container {
+      font-size: 14px; /* Adjust font size for smaller screens */
+  }
 }

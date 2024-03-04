@@ -37,13 +37,13 @@
                     <h3 style="color: #000; margin-bottom: 5px;">Message:</h3>
                     <div class="message-container">
                         <p class="message-text">
-                            {{ prompt|safe }}
+                            {{ prompt[0]|safe }}
                         </p>
                     </div>
                 </div>
                 <!--SEND THE MAIL-->
                 <!--ISSUE ARRISED HERE, MAILTO -> LIMIT + HTML/CSS TAGS NOT SUPPORTED-->
-                <a href="mailto:{{ ', '.join(emailList) }}?subject={{subject}}&subject={{subject}}&body={{prompt}}" class="send-email-button" action="/">Send Email</a>
+                <a href="mailto:{{ ', '.join(emailList) }}?subject={{subject}}&subject={{subject}}&body={{prompt[1]}}" class="send-email-button" action="/">Send Email</a>
                 <br>
                 <form method="POST" action="{{ url_for('exit') }}">
                     <button class="exitButton" href="/exit">Exit</button>

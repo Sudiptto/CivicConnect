@@ -129,7 +129,7 @@ def email():
     nameList = session.get('nameList')
     # subject and prompt 
     subject = session.get('causeSubject')
-    prompt =subjectPrompt(subject,first_name,nameList)
+    prompt = subjectPrompt(subject,first_name,nameList)
 
 
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt)
