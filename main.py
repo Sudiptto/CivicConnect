@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session 
 from flask_mail import Mail, Message
+from allZipcode import *
 import secrets
 from passwords import *
-from allZipcode import * 
 from analysis import * 
 from prompts import *
 
@@ -37,10 +37,10 @@ def home():
         if zip_code.isnumeric() == False:
             flash("Please enter a valid 5 DIGIT INTEGER zipcode", category="error")
 
-        zip_code = int(zip_code)
+        #zip_code = int(zip_code)
 
-        # VALIDATE BOTH ZIP AND CITY DATA 
-        validateZipState = searchAndVerify(zipcodeData, zip_code, state) 
+        # VALIDATE BOTH ZIP AND CITY DATA -> DONT USE THE API FOR NOW 
+        validateZipState = searchAndVerify(zipcodeData, zip_code, state)
         if validateZipState == 'Correct state!':
             #print('test')
             #flash('Correct Move on!', category='error')
@@ -210,7 +210,7 @@ def send_verification_email_route(email, token):
     return redirect(url_for('home'))
 
 
-# NOTE ADD THE USER PROMPTS HERE
+# NOTE ADD THE USER PROMPTS HERE (ALSO APPEARS IN MY SENT BOX)
 def send_verification_email(email, token, optionChosen, promptCritique):
     # to send the verification email 
     subject = 'Verify Your Email for Query'
@@ -222,13 +222,14 @@ def send_verification_email(email, token, optionChosen, promptCritique):
     mail.send(msg)
     
 
+# route where email gets sent to me 
 @app.route('/verify_email/<token>', methods=['GET'])
 def verify_email(token):
     # Check if the token is in the dictionary
     if token in token_data:
         # Retrieve data associated with the token
         data = token_data.pop(token)
-        print(data)
+        #print(data)
         # Set a session variable to indicate email verification
         session['email_verified'] = True
         session['email'] = data['email']
@@ -243,11 +244,13 @@ def verify_email(token):
         body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'
         msg2 = Message(subject, sender=data['email'], recipients=[emailName], html=body)
         mail.send(msg2)
+        #flash('Email sent successfully! Check inbox for more', category='error')
+    # fix this part down here 
     else:
         flash('Invalid or expired verification link.', category='error')
-
+    session.clear()
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(host=ip, port=5500, debug=True) #-> for local testing 
-    #app.run(debug=True)
+    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
+    app.run(debug=True)

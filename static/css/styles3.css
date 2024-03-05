@@ -306,6 +306,6 @@ select {
   .emailAddresses,
   .subject,
   .message-container {
-      font-size: 14px; /* Adjust font size for smaller screens */
+      font-size: 10px; /* Adjust font size for smaller screens */
   }
 }

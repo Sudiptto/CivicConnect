@@ -1,7 +1,8 @@
 # note this is the final for analysing data and then posting it to the main python file 
 import pandas as pd
-from allZipcode import *
 from data import *
+from allZipcode import *
+from passwords import *
 import time
 # FUNCTIONS BELOW 
 """
@@ -23,6 +24,8 @@ for index, row in df.iterrows():
 
 print(zipcode_Data)"""
 
+
+# As of 3/4 deleting the hashmap method to clean up space using the zipcode API 
 # analyze the hashmap -> Note for 1/20 -> Further analyze the hashmap and check if the state value matches 
 def searchAndVerify(zipData, zipCode, state):
     if zipCode in zipData:
@@ -32,10 +35,34 @@ def searchAndVerify(zipData, zipCode, state):
             return 'Invalid state and zip combo'
     else:
         return 'Not Found'
-    
-"""print(searchAndVerify(zipcodeData, 11218, 'NY'))
-print(searchAndVerify(zipcodeData, 11218, 'WY'))
-print(searchAndVerify(zipcodeData, 11200, 'NY'))"""
+
+
+# new search and verify using API 
+"""def searchAndVerify(zipCode, state):
+    # check if zipcode is valid first -> over/under 5 in length
+    if len(zipCode) != 5:
+        return 'Not Found'
+    else:
+        # implement the zipcode ai
+        zipData = requests.get(f"https://api.zipcodestack.com/v1/search?codes={zipCode}&country=us&apikey={apiKey}")
+        zipdata = zipData.json()
+        # if no results than ZIPcode is invalid 
+        resultTotal = len(zipdata['results'])
+
+        if resultTotal == 0:
+            return 'Not Found'
+        
+        else:
+            # check if state and zipcode match 
+            stateValue = zipdata['results'][zipCode][0]['state_code']
+            if stateValue == state:
+                return 'Correct state!'
+            else:                
+                return 'Invalid state and zip combo'
+"""
+
+
+     
 
 # GRAB SENATE AND HOUSE NAMES 
 # the first two names are senators 

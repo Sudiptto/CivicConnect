@@ -160,6 +160,10 @@ option{
     .form-container {
         width: 90%;
     }
+
+    p{
+        font-size: 10px;
+    }
 }
 
 
