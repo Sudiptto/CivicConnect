@@ -5,6 +5,7 @@ import secrets
 from passwords import *
 from analysis import * 
 from prompts import *
+from jinja2 import Environment # will be used for custon jinja functions 
 
 
 # initilize everything
@@ -23,6 +24,13 @@ app.config["MAIL_DEFAULT_SENDER"] = 'your_email@example.com'
 mail.init_app(app)
 token_data = {}
 
+# Jinja Function to append
+def append_item(lst, item):
+    lst.append(item)
+    return lst
+
+env = Environment()
+env.filters['append'] = append_item
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -75,11 +83,13 @@ def causes():
     zipCode = session.get('ZipCode') #  integer
     state = session.get('state') 
 
-    nameList = senateANDhouseNames(state, zipCode)
-    emailList = senateAndhouseEmails(state, zipCode)
+    allReps = allData(state, zipCode)
+    nameList = list(allReps.values())
+    emailList = list(allReps.keys())
 
     #print(emailList)
     # create new session for emailList and nameList 
+    session['allReps'] = allReps
     session['nameList'] = nameList 
     session['emailList'] = emailList
     # NOTE WORKS -> REDIRECT TO AN EMAIL route (final route )
@@ -127,12 +137,16 @@ def email():
     # email and name 
     emailList = session.get('emailList')
     nameList = session.get('nameList')
+
+    # get back dictionary 
+    allReps = session.get('allReps')
+
     # subject and prompt 
     subject = session.get('causeSubject')
     prompt = subjectPrompt(subject,first_name,nameList)
 
 
-    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt)
+    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps)
 
 # THIS PAGE -> Users can add / update their queries
 @app.route('/queries', methods=['POST', 'GET'])
@@ -252,5 +266,5 @@ def verify_email(token):
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
-    app.run(debug=True)
+    app.run(host=ip, port=5500, debug=True) #-> for local testing 
+    #app.run(debug=True)

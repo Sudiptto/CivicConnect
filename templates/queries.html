@@ -11,7 +11,7 @@
       <div class="content-box">
         <h1 class="heading">Hello {{firstName}}!</h1>
         <h3 style="color: darkred;">Note: Verification email may be in spam</h3>
-        <form method="POST">
+        <form method="POST" style="display: flex; flex-direction: column;">
         <div>
             <select required name="emailReason">
               <option value="" disabled selected>Select Option</option>
@@ -20,13 +20,26 @@
             </select>
             
           </div>
+
           <br>
           <input type="email" id="email" name="email" placeholder="Enter your email address" required class="emailForm">
-          <div>
-            <textarea rows="15" placeholder="Please enter your modifications/critiques!"  name='critique' required ></textarea>
-          </div>
+          <br>
+            <div>
+            <textarea id="editor" rows="15" placeholder="Please enter your modifications/critiques!"  name='critique' required ></textarea>
+            </div>
+            <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+            <script>
+              CKEDITOR.replace( 'editor', {
+                toolbar: [
+                  { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript' ] },
+                  { name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote' ] },
+                  { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
+                  { name: 'colors', items: [ 'TextColor', 'BGColor' ] },
+                ]
+              } );
+            </script>
 
-            <button class="submit-button">Submit</button>
+            <button class="submit-button" style="align-self: center;">Submit</button>
           </form>
       </div>
       </div>

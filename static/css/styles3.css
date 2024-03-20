@@ -1,13 +1,18 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Times New Roman', serif;
-    background-image: url('/static/images/img5.png'); /* https://placesjournal.org/wp-content/uploads/2020/06/Anti-Racism-Statement-lead-image.jpg */
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+  font-family: 'Times New Roman', serif;
+  background-image: url('/static/images/img5.png'); /* https://placesjournal.org/wp-content/uploads/2020/06/Anti-Racism-Statement-lead-image.jpg */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   background-size: cover;
-    color: #fff; /* Set text color to white */
-  }
+  color: #fff; /* Set text color to white */
+  overflow-y: auto; /* Make the page scrollable */
+  height: 100%;
+}
+  /* Make the whole page scrollable meaning you can scroll up and down and with no problem and everything will be SHOWN*/
+  /* Make the whole page scrollable meaning you can scroll up and down and with no problem and everything will be SHOWN*/
+
   
   .container {
     display: flex;
@@ -294,18 +299,94 @@ select {
 
 }
 
-@media screen and (max-width: 768px) {
+
+.allEmails{
+  color: #000; font-family: 'Times New Roman', Times, serif; 
+  font-size: 0.7em;
+}
+
+@media screen and (max-width: 1200px) {
   .heading {
-    margin-top: 25px;
-      font-size: 20px; /* Adjust heading font size for smaller screens */
-      padding: -5px; /* Adjust padding for smaller screens */
+    margin-top: 2rem;
+    font-size: 1.5rem; /* Adjust heading font size for smaller screens */
+    padding: 0; /* Adjust padding for smaller screens */
   }
   .content-box {
-      padding: 5px; /* Adjust padding for smaller screens */
+    padding: 1rem; /* Adjust padding for smaller screens */
   }
   .emailAddresses,
   .subject,
   .message-container {
-      font-size: 10px; /* Adjust font size for smaller screens */
+    font-size: 1rem; /* Adjust font size for smaller screens */
+  }
+  h3{
+    font-size: 1rem;
+  }
+}
+@media screen and (max-width: 1992px) {
+  .heading {
+    font-size: 1.25rem;
+  }
+  .content-box {
+    padding: 0.75rem;
+  }
+  .emailAddresses,
+  .subject,
+  .message-container {
+    font-size: 0.875rem;
+  }
+  h3{
+    font-size: 0.90rem;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .heading {
+    font-size: 1.25rem;
+  }
+  .content-box {
+    padding: 0.75rem;
+  }
+  .emailAddresses,
+  .subject,
+  .message-container {
+    font-size: 0.875rem;
+  }
+  h3{
+    font-size: 0.90rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .heading {
+    font-size: 1.2rem;
+  }
+  .content-box {
+    padding: 0.5rem;
+  }
+  .emailAddresses,
+  .subject,
+  .message-container {
+    font-size: 0.75rem;
+  }
+  h3{
+    font-size: 0.80rem;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .heading {
+    font-size: 1rem;
+  }
+  .content-box {
+    padding: 0.25rem;
+  }
+  .emailAddresses,
+  .subject,
+  .message-container {
+    font-size: 0.625rem;
+  }
+  h3{
+    font-size: 0.70rem;
   }
 }

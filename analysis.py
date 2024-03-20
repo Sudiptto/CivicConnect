@@ -65,33 +65,24 @@ def searchAndVerify(zipData, zipCode, state):
      
 
 # GRAB SENATE AND HOUSE NAMES 
-# the first two names are senators 
-def senateANDhouseNames(state, zipCode):
-    names = []
+# key -> email, value - > name
+def allData(state, zipcode):
+    allRepData = {}
+
+    # add the house rep  dictionary first 
+    repData = represenativeNamesandEmails(zipcode)
+    allRepData.update(repData)
     
-    # SENATE NAMES
-    senateNames = senateData[state]
-    names.extend(senateNames)
-    # House names
-    houseNames = represenativeNames(zipCode)
-    names.extend(houseNames)
 
-    return names 
+    # add the senate data 
+    #print(senatorData[state][0]) #
+    # TWO SENATORS 
+    allRepData[senatorData[state][0]] = senateNameEmail[senatorData[state][0]]
+    allRepData[senatorData[state][1]] = senateNameEmail[senatorData[state][1]]
 
-# SENATE AND HOUSE EMAIL ADDRESSES 
-def senateAndhouseEmails(state, zipCode):
-    emails = []
+    return allRepData
 
-    # senate emails
-    senateEmails = senatorData[state]
-    emails.extend(senateEmails)
-
-    # house emails 
-    houseEmails = getHouseEmails(zipCode)
-    emails.extend(houseEmails)
-
-    return emails
-
+#print(allData('NY', 11218))
 
 #print(senateAndhouseEmails('NY', 11218)) 
 #print(senateANDhouseNames('NY', '11218'))

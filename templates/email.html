@@ -14,16 +14,60 @@
       <div class="content-box">
 
             <h1 class="heading">Hello {{firstName}}, please read over the email!</h1>
+            <!--
+                How to create values in Jinja 
+            <h1>{% set testing = 'it worked' %}
+                {% set another = testing %}
+                {{ another }}</h1> -->
 
                 <!-- Recipients -->
                 <div>
                     <h3 style="color: #000; margin-bottom: 5px;">Recipients:</h3>
-                    <p class="emailAddresses">
-                        {{ ', '.join(emailList) }}
-                    </p>
-                    
+                    <form id="emailForm">
+                        
+                        {% for email in emailList %}
+                            <div class="emailBox">
+                                <input type="checkbox" class="email-checkbox" id="{{email}}" name="recipient_emails" value="{{email}}">
+                                <label for="{{email}}" class="allEmails">{{email}}</label>
+                            </div>
+                        {% endfor %}
+                        <button type="submit" id="submit-button">Submit</button>
+                    </form>
                 </div>
-        
+
+                <script>
+                        // read the allReps jinja data -> object 
+                        var allReps = {{ allReps|tojson|safe }};
+                        //console.log(allReps);
+                    
+                    // This tests works 
+                    document.getElementById('submit-button').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Push the represenative email data 
+                        var allRepEmails = [];
+                        var checkboxes = document.getElementsByClassName('email-checkbox');
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            if (checkboxes[i].checked) {
+                                allRepEmails.push(checkboxes[i].value);
+                            }
+                        }
+                        // push the rep name data
+                        var allRepNames = [];
+                        for(var i=0; i < allRepEmails.length; i++){
+                            allRepNames.push(allReps[allRepEmails[i]]);
+                        }
+                        
+                        console.log(allRepNames)
+                        alert(allRepEmails);
+
+                        // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
+                        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(',') + "  {{ prompt[1] }}");
+                        document.getElementById('send-email-button').setAttribute('href', mailtoLink);
+                        //alert(allRepEmails);
+                    });
+                </script>
+                
+                <!--<h1>{{senators}}</h1>-->
                 <!-- Subject -->
                 <div>
                     <h3 style="color: #000; margin-bottom: 5px;">Subject:</h3>
@@ -43,7 +87,7 @@
                 </div>
                 <!--SEND THE MAIL-->
                 <!--ISSUE ARRISED HERE, MAILTO -> LIMIT + HTML/CSS TAGS NOT SUPPORTED-->
-                <a href="mailto:{{ ', '.join(emailList) }}?subject={{subject}}&subject={{subject}}&body={{prompt[1]}}" class="send-email-button" action="/">Send Email</a>
+                <a id="send-email-button" class="send-email-button" action="/">Send Email</a>
                 <br>
                 <form method="POST" action="{{ url_for('exit') }}">
                     <button class="exitButton" href="/exit">Exit</button>
