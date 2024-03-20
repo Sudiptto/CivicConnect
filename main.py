@@ -266,5 +266,5 @@ def verify_email(token):
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(host=ip, port=5500, debug=True) #-> for local testing 
-    #app.run(debug=True)
+    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
+    app.run(debug=True)

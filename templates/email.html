@@ -35,37 +35,6 @@
                     </form>
                 </div>
 
-                <script>
-                        // read the allReps jinja data -> object 
-                        var allReps = {{ allReps|tojson|safe }};
-                        //console.log(allReps);
-                    
-                    // This tests works 
-                    document.getElementById('submit-button').addEventListener('click', function(e) {
-                        e.preventDefault();
-                        // Push the represenative email data 
-                        var allRepEmails = [];
-                        var checkboxes = document.getElementsByClassName('email-checkbox');
-                        for (var i = 0; i < checkboxes.length; i++) {
-                            if (checkboxes[i].checked) {
-                                allRepEmails.push(checkboxes[i].value);
-                            }
-                        }
-                        // push the rep name data
-                        var allRepNames = [];
-                        for(var i=0; i < allRepEmails.length; i++){
-                            allRepNames.push(allReps[allRepEmails[i]]);
-                        }
-                        
-                        console.log(allRepNames)
-                        alert(allRepEmails);
-
-                        // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
-                        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(',') + "  {{ prompt[1] }}");
-                        document.getElementById('send-email-button').setAttribute('href', mailtoLink);
-                        //alert(allRepEmails);
-                    });
-                </script>
                 
                 <!--<h1>{{senators}}</h1>-->
                 <!-- Subject -->
@@ -81,7 +50,7 @@
                     <h3 style="color: #000; margin-bottom: 5px;">Message:</h3>
                     <div class="message-container">
                         <p class="message-text">
-                            {{ prompt[0]|safe }}
+                           <span id="testing">Dear</span> {{ prompt[0]|safe }}
                         </p>
                     </div>
                 </div>
@@ -96,7 +65,40 @@
         </div>
       </div>
     </div>
-  
+    <!--SCRIPT BELOW-->
+<script>
+        // read the allReps jinja data -> object 
+        var allReps = {{ allReps|tojson|safe }};
+        //console.log(allReps);
+    
+    // This tests works 
+    document.getElementById('submit-button').addEventListener('click', function(e) {
+        e.preventDefault();
+        // Push the represenative email data 
+        var allRepEmails = [];
+        var checkboxes = document.getElementsByClassName('email-checkbox');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                allRepEmails.push(checkboxes[i].value);
+            }
+        }
+        // push the rep name data
+        var allRepNames = [];
+        for(var i=0; i < allRepEmails.length; i++){
+            allRepNames.push(allReps[allRepEmails[i]]);
+        }
+       
+        document.getElementById("testing").textContent = "Dear " + allRepNames.join(', ');
+        console.log(allRepNames)
+        alert(allRepEmails);
+
+        // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
+        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(',') + "  {{ prompt[1] }}");
+        document.getElementById('send-email-button').setAttribute('href', mailtoLink);
+        //alert(allRepEmails);
+    });
+</script>
+
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
   </body>
   
