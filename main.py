@@ -98,14 +98,14 @@ def causes():
         cause = request.form['cause']
         causeSubject = ""
         # fill out the prompts -> check the prompts.py file 
-        if cause == 'environmental-protection':
-            causeSubject = 'Enviornmental Protection'
+        if cause == 'southern-border':
+            causeSubject = 'Southern Border'
 
         if cause == 'free-palestine':
             causeSubject = 'Free Palestine'
 
-        if cause == 'racial-redlining':
-            causeSubject = 'Racial Redlining'
+        if cause == 'affordable-housing':
+            causeSubject = 'Affordable Housing'
 
         if cause == 'poverty':
             causeSubject = 'Poverty'

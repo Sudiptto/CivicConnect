@@ -31,7 +31,7 @@
                                 <label for="{{email}}" class="allEmails">{{email}}</label>
                             </div>
                         {% endfor %}
-                        <button type="submit" id="submit-button">Submit</button>
+                        <button type="submit" id="submit-button" class="repSubmit">Submit</button>
                     </form>
                 </div>
 
@@ -61,7 +61,7 @@
                 <form method="POST" action="{{ url_for('exit') }}">
                     <button class="exitButton" href="/exit">Exit</button>
                 </form>
-                <p style="color: black; font-size: small;">Note: If your email provider isn't working than please copy and paste the information.</p>
+                <p style="color: black; font-size: small;">Note: If your email provider isn't working than please copy and paste the information. (Best on Mobile)</p>
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@
         alert(allRepEmails);
 
         // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
-        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(',') + "  {{ prompt[1] }}");
+        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(', ') + "  {{ prompt[1] }}");
         document.getElementById('send-email-button').setAttribute('href', mailtoLink);
         //alert(allRepEmails);
     });

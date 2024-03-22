@@ -305,6 +305,13 @@ select {
   font-size: 0.7em;
 }
 
+.repSubmit{
+  background-color: navy;
+  color: white;
+  /*Add a curve to it */
+  border-radius: 25px;
+}
+
 @media screen and (max-width: 1200px) {
   .heading {
     margin-top: 2rem;

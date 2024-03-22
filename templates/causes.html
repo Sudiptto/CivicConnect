@@ -15,18 +15,19 @@
       <h1 class="heading">HI {{firstName.upper()}}, PLEASE PICK A CAUSE!</h1>
       <p style="color:black;">Prompts researched and written by <a href="https://www.linkedin.com/in/lukecorless/">Luke Corless</a></p>
       <!--FOR PROMPTS GO TO prompts.py-->
+      <!--As of 3/21 changing the values and prompts to match final product-->
       <form method="POST">
         <div class="causes-list">
-          <label class="cause-item" onclick="openModal('Environmental Protection', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[0]}}')">
-              <input type="radio" name="cause" value="environmental-protection" required> Environmental Protection
+          <label class="cause-item" onclick="openModal('Southern Border', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[0]}}')">
+              <input type="radio" name="cause" value="southern-border" required> Southern Border 
           </label>
-          <label class="cause-item" onclick="openModal('Free Palestine', '{{allPrompts[1]}}')">
+          <label class="cause-item" onclick="openModal('Free Palestine', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[1]}}')">
               <input type="radio" name="cause" value="free-palestine" required> Free Palestine
           </label>
-          <label class="cause-item" onclick="openModal('Racial Redlining', '{{allPrompts[2]}}')">
-              <input type="radio" name="cause" value="racial-redlining" required> Racial Redlining
+          <label class="cause-item" onclick="openModal('Racial Redlining', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[2]}}')">
+              <input type="radio" name="cause" value="affordable-housing" required> Affordable Housing
           </label>
-          <label class="cause-item" onclick="openModal('Poverty', '{{allPrompts[3]}}')">
+          <label class="cause-item" onclick="openModal('Poverty', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[3]}}')">
               <input type="radio" name="cause" value="poverty" required> Poverty
           </label>
           <!-- Add more causes as needed -->
