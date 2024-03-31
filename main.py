@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session 
+from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from flask_mail import Mail, Message
 from allZipcode import *
 import secrets
@@ -71,6 +71,8 @@ def home():
         
 
     return render_template('home.html')
+
+#add another route that red
 
 # this is the causes page 
 @app.route('/causes',  methods=['GET', 'POST'])
@@ -180,6 +182,15 @@ def queries():
     return render_template('queries.html', firstName=first_name)
 
 
+# get the email from the fetch request from the email page  (javascript) and print out the email 
+@app.route('/email_sent', methods=['POST'])
+def email_sent():
+    data = request.get_json()
+    print(data)
+    email = data['email']
+    print(email)
+    return jsonify({'result': 'Email received'}), 200
+
 
 
 # EXIT ROUTE -> WORKS
@@ -253,6 +264,8 @@ def verify_email(token):
         email = data['email']
 
         flash('Email verified.', category='success')
+
+        print("Email works!")
         # send the prompt email to us -> only after verification
         subject = f'User Prompt: {optionChosen}'
         body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'

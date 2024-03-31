@@ -57,20 +57,30 @@
                 <!--SEND THE MAIL-->
                 <!--ISSUE ARRISED HERE, MAILTO -> LIMIT + HTML/CSS TAGS NOT SUPPORTED-->
                 <a id="send-email-button" class="send-email-button" action="/">Send Email</a>
+
+                <!--Send through us-->
+                <button class="send-email-button" onclick="sendEmail()"  id="sendMail" disabled>Can't send? Send through us!</button>
+                
                 <br>
                 <form method="POST" action="{{ url_for('exit') }}">
                     <button class="exitButton" href="/exit">Exit</button>
                 </form>
-                <p style="color: black; font-size: small;">Note: If your email provider isn't working than please copy and paste the information. (Best on Mobile)</p>
+                <p style="color: black; font-size: 0.7em;">Note: If your email provider isn't working than please copy and paste the information. (Best on Mobile)</p>
         </div>
       </div>
     </div>
     <!--SCRIPT BELOW-->
 <script>
-        // read the allReps jinja data -> object 
-        var allReps = {{ allReps|tojson|safe }};
-        //console.log(allReps);
+    // read the allReps jinja data -> object 
+    var allReps = {{ allReps|tojson|safe }};
     
+    // Get the send button
+    var sendButton = document.getElementById('sendMail');
+        
+    // global email and name variables 
+    var repEmails = [];
+    var repNames = [];
+
     // This tests works 
     document.getElementById('submit-button').addEventListener('click', function(e) {
         e.preventDefault();
@@ -82,11 +92,23 @@
                 allRepEmails.push(checkboxes[i].value);
             }
         }
+
+        repEmails = allRepEmails;
+
+        // If no checkboxes are selected, keep the send button disabled
+        if (allRepEmails.length === 0) {
+            sendButton.disabled = true;
+        } else {
+            sendButton.disabled = false;
+        }
+
         // push the rep name data
         var allRepNames = [];
         for(var i=0; i < allRepEmails.length; i++){
             allRepNames.push(allReps[allRepEmails[i]]);
         }
+
+        repNames = allRepNames;
        
         document.getElementById("testing").textContent = "Dear " + allRepNames.join(', ');
         console.log(allRepNames)
@@ -97,6 +119,48 @@
         document.getElementById('send-email-button').setAttribute('href', mailtoLink);
         //alert(allRepEmails);
     });
+
+    // send the email (option for the can't send? Send through us option )
+    function sendEmail() {
+        // - > works data gets sent through 
+        //console.log(repEmails, repNames);
+        let email = prompt("Please enter your email: ");
+
+        // if statement to check if its a valid email (in the sense that at most 64 characters, one @ sign, check if the domain is valud doesnt have special cahracters, valid extension etc )
+        
+        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,64}$/;
+        if (email === null || email === "" || !emailRegex.test(email)) {
+            alert("Please enter a valid email address");
+            return;
+        }
+        
+
+        
+        // send all the email data over 
+        var entry = {
+            email: email,
+            repEmails: repEmails,
+            repNames: repNames,
+            subject: '{{ subject }}',
+            prompt: "Dear "+ repNames.join(', ') +  '. {{ prompt[1] }}'
+        }
+
+        fetch('/email_sent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(entry),
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
+        alert("Email recieved! Check your inbox for an email confirmation, click the link to send the email. You should recieve a CC of the email sent. Thank you!");
+    }
+
 </script>
 
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
