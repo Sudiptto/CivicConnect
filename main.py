@@ -23,7 +23,7 @@ app.config["MAIL_PASSWORD"] = emailPassword
 app.config["MAIL_DEFAULT_SENDER"] = 'your_email@example.com'
 mail.init_app(app)
 token_data = {}
-
+reasoning = ""
 # Jinja Function to append
 def append_item(lst, item):
     lst.append(item)
@@ -174,8 +174,10 @@ def queries():
             'promptCritique': promptCritique
         }
 
+        reasoning = "queries"
+
         # Redirect to the route responsible for sending the email
-        return redirect(url_for('send_verification_email_route', email=email, token=verification_token))
+        return redirect(url_for('send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
     
 
     first_name = session.get('first_name')
@@ -224,54 +226,60 @@ def generate_token_and_send_email():
         return redirect(url_for('send_verification_email_route', email=email, token=verification_token))
 
 
-@app.route('/send_verification_email/<email>/<token>', methods=['GET'])
-def send_verification_email_route(email, token):
-    verification_data = token_data.get(token, {})
-    optionChosen = verification_data.get('selectOption')
-    promptCritique = verification_data.get('promptCritique')
-    send_verification_email(email, token, optionChosen, promptCritique)
-    flash('Verification link sent to your email.', category='info')
+# send the email to the user
+@app.route('/send_verification_email/<email>/<token>/<reasoning>', methods=['GET'])
+def send_verification_email_route(email, token, reasoning):
+    if reasoning == 'queries':
+        verification_data = token_data.get(token, {})
+        optionChosen = verification_data.get('selectOption')
+        promptCritique = verification_data.get('promptCritique')
+        send_verification_email(email, token, optionChosen, promptCritique, reasoning=reasoning)
+        flash('Verification link sent to your email. Reasoning: ' + reasoning, category='info')
 
     return redirect(url_for('home'))
 
 
 # NOTE ADD THE USER PROMPTS HERE (ALSO APPEARS IN MY SENT BOX)
-def send_verification_email(email, token, optionChosen, promptCritique):
+def send_verification_email(email, token, optionChosen, promptCritique, reasoning):
     # to send the verification email 
-    subject = 'Verify Your Email for Query'
-    verification_link = url_for('verify_email', token=token, _external=True)
+    if reasoning == 'queries':
+        subject = 'Verify Your Email for Query'
+        verification_link = url_for('verify_email', token=token, reasoning = reasoning, _external=True)
 
-    body = f'Click the following link to verify your email: {verification_link} <br> <b>Here is your inputs:</b> <br> <p>Option chosen: {optionChosen} <br> {promptCritique} '
+        body = f'Click the following link to verify your email: {verification_link} <br> <b>Here is your inputs:</b> <br> <p>Option chosen: {optionChosen} <br> {promptCritique} '
 
-    msg = Message(subject, recipients=[email], html=body)
-    mail.send(msg)
+        msg = Message(subject, recipients=[email], html=body)
+        mail.send(msg)
     
 
-# route where email gets sent to me 
-@app.route('/verify_email/<token>', methods=['GET'])
-def verify_email(token):
+# route where email gets sent to me (civic connect email)
+@app.route('/verify_email/<token>/<reasoning>', methods=['GET'])
+def verify_email(token, reasoning):
     # Check if the token is in the dictionary
     if token in token_data:
         # Retrieve data associated with the token
         data = token_data.pop(token)
         #print(data)
         # Set a session variable to indicate email verification
-        session['email_verified'] = True
-        session['email'] = data['email']
+        if reasoning == 'queries':
+            session['email_verified'] = True
+            session['email'] = data['email']
 
-        promptCritique = data['promptCritique']
-        optionChosen = data['selectOption']
-        email = data['email']
+            promptCritique = data['promptCritique']
+            optionChosen = data['selectOption']
+            email = data['email']
 
-        flash('Email verified.', category='success')
+            flash('Email verified.', category='success')
 
-        print("Email works!")
-        # send the prompt email to us -> only after verification
-        subject = f'User Prompt: {optionChosen}'
-        body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'
-        msg2 = Message(subject, sender=data['email'], recipients=[emailName], html=body)
-        mail.send(msg2)
-        #flash('Email sent successfully! Check inbox for more', category='error')
+            print("Email works!")
+            # send the prompt email to us -> only after verification
+            subject = f'User Prompt: {optionChosen}'
+            body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'
+            msg2 = Message(subject, sender=data['email'], recipients=[emailName], html=body)
+            mail.send(msg2)
+            flash('Email sent successfully! Check inbox for more', category='error')
+
+
     # fix this part down here 
     else:
         flash('Invalid or expired verification link.', category='error')
