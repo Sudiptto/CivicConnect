@@ -175,6 +175,7 @@ def queries():
         }
 
         reasoning = "queries"
+        #session['reasoning'] = reasoning
 
         # Redirect to the route responsible for sending the email
         return redirect(url_for('send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
@@ -188,10 +189,26 @@ def queries():
 @app.route('/email_sent', methods=['POST'])
 def email_sent():
     data = request.get_json()
-    print(data)
+    
     email = data['email']
-    print(email)
-    return jsonify({'result': 'Email received'}), 200
+    repEmails = data['repEmails']
+    repNames = data['repNames']
+    subject = data['subject']
+    prompt = data['prompt']
+
+    reasoning = "sendOnBehalf"
+    
+    # Generate a unique token
+    verification_token = secrets.token_hex(16)
+    token_data[verification_token] = {
+            'email': email,
+            'repEmails': repEmails,
+            'repNames': repNames,
+            'subject': subject,
+            'prompt': prompt
+    }
+
+    return redirect(url_for('send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
 
 
 
@@ -212,15 +229,20 @@ def generate_token_and_send_email():
         email = request.form['email']
         selectOption = request.form['emailReason']
         promptCritique = request.form['critique']
+        reasoning = request.form['reasoning']
         # Generate a unique token
         verification_token = secrets.token_hex(16)
 
+        if reasoning == 'queries':
         # Store the token and associated data in the dictionary
-        token_data[verification_token] = {
-            'email': email,
-            'selectOption': selectOption,
-            'promptCritique': promptCritique
-        }
+            token_data[verification_token] = {
+                'email': email,
+                'selectOption': selectOption,
+                'promptCritique': promptCritique
+            }
+
+        elif reasoning == "sendOnBehalf":
+            print("Send on behalf activated ")
 
         # Redirect to the route responsible for sending the email
         return redirect(url_for('send_verification_email_route', email=email, token=verification_token))
@@ -233,16 +255,35 @@ def send_verification_email_route(email, token, reasoning):
         verification_data = token_data.get(token, {})
         optionChosen = verification_data.get('selectOption')
         promptCritique = verification_data.get('promptCritique')
-        send_verification_email(email, token, optionChosen, promptCritique, reasoning=reasoning)
+        send_verification_email(email, token, reasoning=reasoning)
         flash('Verification link sent to your email. Reasoning: ' + reasoning, category='info')
+
+    elif reasoning == 'sendOnBehalf':
+        verification_data = token_data.get(token, {})
+
+        repEmails = verification_data.get('repEmails')
+        repNames = verification_data.get('repNames')
+        subject = verification_data.get('subject')
+        prompt = verification_data.get('prompt')
+
+        #print(verification_data)
+         
+
+        print('Send on behalf activated!!')
 
     return redirect(url_for('home'))
 
 
 # NOTE ADD THE USER PROMPTS HERE (ALSO APPEARS IN MY SENT BOX)
-def send_verification_email(email, token, optionChosen, promptCritique, reasoning):
+def send_verification_email(email, token, reasoning):
     # to send the verification email 
+    
+    verification_data = token_data.get(token, {})
+
     if reasoning == 'queries':
+        print("Testing again: ", verification_data)
+        optionChosen = verification_data.get('selectOption')
+        promptCritique = verification_data.get('promptCritique')
         subject = 'Verify Your Email for Query'
         verification_link = url_for('verify_email', token=token, reasoning = reasoning, _external=True)
 
@@ -271,7 +312,7 @@ def verify_email(token, reasoning):
 
             flash('Email verified.', category='success')
 
-            print("Email works!")
+            
             # send the prompt email to us -> only after verification
             subject = f'User Prompt: {optionChosen}'
             body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'
