@@ -338,7 +338,25 @@ def verify_email(token, reasoning):
             data['repEmails'] = repEmailFake
             data["repNames"] = repNames
 
-            print(data)
+            #print(data)
+
+            userEmail = data['email']
+
+            # send the email (use the emailName gmail) to the reps and cc the user email(the user who sent it and have the subject be the prompt)
+            subject = data['subject']
+            prompt = data['prompt']
+            repEmails = data['repEmails']
+            repNames = data['repNames']
+
+            # send the email to the reps -> send one email and send it to all of the rep email addresses
+            
+            body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">{subject}</h2><p><strong>Email:</strong> {userEmail}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Prompt:</strong></p><div style="padding-left:20px;">{prompt}</div><p>This email was sent via the CivicConnect email on behalf of {userEmail}.</p></div>'
+            msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
+            
+            mail.send(msg)
+
+
+
 
 
     # fix this part down here 
