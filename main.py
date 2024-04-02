@@ -5,7 +5,6 @@ import secrets
 from passwords import *
 from analysis import * 
 from prompts import *
-from jinja2 import Environment # will be used for custon jinja functions 
 
 
 # initilize everything
@@ -18,19 +17,15 @@ app.config["MAIL_SERVER"] = 'smtp.gmail.com'
 app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
+# mail username and password will change based on sending vs recieving email -> default recieving email
 app.config["MAIL_USERNAME"] = emailName
 app.config["MAIL_PASSWORD"] = emailPassword
 app.config["MAIL_DEFAULT_SENDER"] = 'your_email@example.com'
 mail.init_app(app)
+
+
 token_data = {}
 reasoning = ""
-# Jinja Function to append
-def append_item(lst, item):
-    lst.append(item)
-    return lst
-
-env = Environment()
-env.filters['append'] = append_item
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -252,20 +247,16 @@ def generate_token_and_send_email():
 @app.route('/send_verification_email/<email>/<token>/<reasoning>', methods=['GET'])
 def send_verification_email_route(email, token, reasoning):
     if reasoning == 'queries':
-        verification_data = token_data.get(token, {})
-        optionChosen = verification_data.get('selectOption')
-        promptCritique = verification_data.get('promptCritique')
         send_verification_email(email, token, reasoning=reasoning)
         flash('Verification link sent to your email. Reasoning: ' + reasoning, category='info')
 
     elif reasoning == 'sendOnBehalf':
-        verification_data = token_data.get(token, {})
-
-        repEmails = verification_data.get('repEmails')
+        """repEmails = verification_data.get('repEmails')
         repNames = verification_data.get('repNames')
         subject = verification_data.get('subject')
-        prompt = verification_data.get('prompt')
+        prompt = verification_data.get('prompt')"""
 
+        send_verification_email(email, token, reasoning=reasoning)
         #print(verification_data)
          
 
@@ -274,14 +265,19 @@ def send_verification_email_route(email, token, reasoning):
     return redirect(url_for('home'))
 
 
-# NOTE ADD THE USER PROMPTS HERE (ALSO APPEARS IN MY SENT BOX)
+
 def send_verification_email(email, token, reasoning):
-    # to send the verification email 
+    # to send the verification email use a different email address (for sending)
+    app.config["MAIL_USERNAME"] = sendEmail
+    app.config["MAIL_PASSWORD"] = sendPassword
     
+    # create new mail object
+    send_mail = Mail(app)
+
     verification_data = token_data.get(token, {})
 
     if reasoning == 'queries':
-        print("Testing again: ", verification_data)
+       
         optionChosen = verification_data.get('selectOption')
         promptCritique = verification_data.get('promptCritique')
         subject = 'Verify Your Email for Query'
@@ -290,8 +286,19 @@ def send_verification_email(email, token, reasoning):
         body = f'Click the following link to verify your email: {verification_link} <br> <b>Here is your inputs:</b> <br> <p>Option chosen: {optionChosen} <br> {promptCritique} '
 
         msg = Message(subject, recipients=[email], html=body)
-        mail.send(msg)
+        send_mail.send(msg)
     
+    elif reasoning == "sendOnBehalf":
+        # works -> send a verification email out to the user
+        #print("Testing again for sendOnBehalf ", verification_data)
+        verification_link = url_for('verify_email', token=token, reasoning = reasoning, _external=True)
+        body = f'Click the following link to verify your email: {verification_link} <br>'
+        subject = 'Verify Your Email!'
+        msg = Message(subject, recipients=[email], html=body)
+        send_mail.send(msg)
+
+        app.config["MAIL_USERNAME"] = emailName
+        app.config["MAIL_PASSWORD"] = emailPassword
 
 # route where email gets sent to me (civic connect email)
 @app.route('/verify_email/<token>/<reasoning>', methods=['GET'])
@@ -319,6 +326,19 @@ def verify_email(token, reasoning):
             msg2 = Message(subject, sender=data['email'], recipients=[emailName], html=body)
             mail.send(msg2)
             flash('Email sent successfully! Check inbox for more', category='error')
+
+        elif reasoning == 'sendOnBehalf':
+            # - > worked 
+            print("Testing at this app route worked!")
+
+            # change the repEmails to seperate emails (for testing -> not final product )
+            # site for disposable emails - > https://temp-mail.org/en/
+            repEmailFake = ["fejime7164@ekposta.com", "fejime7134@ekposta.com"]
+            repNames = ["Testing1", "Testing2"]
+            data['repEmails'] = repEmailFake
+            data["repNames"] = repNames
+
+            print(data)
 
 
     # fix this part down here 
