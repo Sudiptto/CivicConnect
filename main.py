@@ -28,9 +28,23 @@ mail.init_app(app)
 token_data = {}
 reasoning = ""
 
+# start page 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
+        # get client side IP (used to check if the state address matches the IP address) -> meant to prevent people from lying about their location
+        # Note: THE IP ADDRESS works but for local testing it returns back the local host (However, when deployed it will return the correct IP address)!
+        ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+        
+        # for local testing
+        ip_address = ip
+
+        # get the ip_address look up and see what state its linked to and if it matches the state that the user inputted -> use IP address look up api
+        # website - > https://ip-api.com/docs/api:json
+        ipLookup = requests.get(f"http://ip-api.com/json/{ip_address}").json()
+        ipState = ipLookup['region']
+
+
         # Access form data
         first_name = request.form['firstName']
         last_name = request.form['lastName']
@@ -45,7 +59,9 @@ def home():
 
         # VALIDATE BOTH ZIP AND CITY DATA -> DONT USE THE API FOR NOW 
         validateZipState = searchAndVerify(zipcodeData, zip_code, state)
-        if validateZipState == 'Correct state!':
+
+
+        if validateZipState == 'Correct state!' and state==ipState:
             #print('test')
             #flash('Correct Move on!', category='error')
             session['valid_zip_state'] = True
@@ -60,6 +76,12 @@ def home():
         elif validateZipState == 'Invalid state and zip combo':
             session['valid_zip_state'] = False
             flash('Invalid state and zip combo', category='error')
+
+        # works
+        elif state != ipState:
+            session['valid_zip_state'] = False
+            flash('Please enter the current state and zipcode you are in!', category='error')
+
         else:
             session['valid_zip_state'] = False
             flash('Incorrect zipcode', category='error')
@@ -385,5 +407,5 @@ def verify_email(token, reasoning):
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(host=ip, port=5500, debug=True) #-> for local testing 
-    #app.run(debug=True)
+    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
+    app.run(debug=True)
