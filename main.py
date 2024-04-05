@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from flask_mail import Mail, Message
+from emailTrack import *
 from allZipcode import *
 import secrets
 from passwords import *
@@ -143,7 +144,7 @@ def email():
     prompt = subjectPrompt(subject,first_name,nameList)
 
 
-    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps)
+    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
 
 # THIS PAGE -> Users can add / update their queries
 @app.route('/queries', methods=['POST', 'GET'])
@@ -206,13 +207,26 @@ def email_sent():
     return redirect(url_for('send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
 
 
+# from the email page get the sent data from mailto (not as reliable as sending through civic connect) -> check email.html for the fetch api
+@app.route('/email_sent_mailto', methods=['POST'])
+def email_sent_mailto():
+
+    data = request.get_json()
+    
+    subject = data['subject']
+    zipCode = int(data['zipCode'])
+    route = data['route']
+
+    # send this data over to analytics.csv to be tracked 
+    # verified -> works
+    trackData(zipCode, subject, route)
+
+    return jsonify(data)
 
 # EXIT ROUTE -> WORKS
-@app.route('/exit', methods=['POST'])
+@app.route('/exit', methods=['POST', 'GET'])
 def exit():
-    if request.method == 'POST':
-        session.clear()
-        return redirect(url_for('home'))
+    session.clear()
     return redirect(url_for('home'))
 
 
@@ -323,17 +337,17 @@ def verify_email(token, reasoning):
             # send the prompt email to us -> only after verification
             subject = f'User Prompt: {optionChosen}'
             body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'
-            msg2 = Message(subject, sender=data['email'], recipients=[emailName], html=body)
+            msg2 = Message(subject, sender=data['email'], recipients=[emailName], cc = [email], html=body)
             mail.send(msg2)
             flash('Email sent successfully! Check inbox for more', category='error')
 
         elif reasoning == 'sendOnBehalf':
             # - > worked 
-            print("Testing at this app route worked!")
+            #print("Testing at this app route worked!")
 
             # change the repEmails to seperate emails (for testing -> not final product )
             # site for disposable emails - > https://temp-mail.org/en/
-            repEmailFake = ["fejime7164@ekposta.com", "fejime7134@ekposta.com"]
+            repEmailFake = ["fejime7164@ekposta.com", "test@gmail.com"]
             repNames = ["Testing1", "Testing2"]
             data['repEmails'] = repEmailFake
             data["repNames"] = repNames
@@ -347,13 +361,18 @@ def verify_email(token, reasoning):
             prompt = data['prompt']
             repEmails = data['repEmails']
             repNames = data['repNames']
-
+            
             # send the email to the reps -> send one email and send it to all of the rep email addresses
             
             body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">{subject}</h2><p><strong>Email:</strong> {userEmail}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Prompt:</strong></p><div style="padding-left:20px;">{prompt}</div><p>This email was sent via the CivicConnect email on behalf of {userEmail}.</p></div>'
             msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
             
             mail.send(msg)
+
+            # get the zipcode and the subject and send the data to the analytics file 
+            zipCode = session.get('ZipCode')
+
+            trackData(zipCode, subject, "CivicConnectEmail")
 
 
 
@@ -366,5 +385,5 @@ def verify_email(token, reasoning):
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
-    app.run(debug=True)
+    app.run(host=ip, port=5500, debug=True) #-> for local testing 
+    #app.run(debug=True)

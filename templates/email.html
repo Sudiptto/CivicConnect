@@ -117,7 +117,30 @@
         // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
         var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(', ') + "  {{ prompt[1] }}");
         document.getElementById('send-email-button').setAttribute('href', mailtoLink);
+        document.getElementById('send-email-button').addEventListener('click', function() {
+            // send the data over to /email_sent_mailto
+            entry = {
+                subject: '{{ subject }}',
+                zipCode: '{{ zipCode }}',
+                route: 'MailTo'
+            }
+
+            fetch('/email_sent_mailto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(entry),
+            })
+
+            // Delay the redirection by 2 seconds
+            setTimeout(function() {
+                window.location.href = '/exit';
+            }, 2000);
+        });
+        
         //alert(allRepEmails);
+        
     });
 
     // send the email (option for the can't send? Send through us option )
@@ -159,6 +182,7 @@
         });
 
         alert("Email recieved! Check your inbox for an email confirmation, click the link to send the email. You should recieve a CC of the email sent. Thank you!");
+        window.location.href = "/exit";
     }
 
 </script>
