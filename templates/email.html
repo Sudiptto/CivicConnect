@@ -114,6 +114,7 @@
         console.log(allRepNames)
         alert(allRepEmails);
 
+
         // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
         var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(', ') + "  {{ prompt[1] }}");
         document.getElementById('send-email-button').setAttribute('href', mailtoLink);

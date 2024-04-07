@@ -42,17 +42,17 @@ def subjectPrompt(prompt,name,represenative, zip):
     if prompt == "Southern Border":
         #message = allPrompts[0]
         message.append(allPrompts[0])
-        message.append(southernBorder + "Sincerely, " + name + " " + zip)
+        message.append(southernBorder + "Sincerely, " + name + " ZipCode: " + zip)
 
     elif prompt == "Free Palestine":
         #message = allPrompts[1]
         message.append(allPrompts[1])
-        message.append(freePalestine  + "Sincerely, " + name + " " + zip)
+        message.append(freePalestine  + "Sincerely, " + name + " ZipCode: " + zip)
 
     elif prompt == "Affordable Housing":
         #message = allPrompts[2]
         message.append(allPrompts[2])
-        message.append(affordableHousing  + "Sincerely, " + name + " " + zip)
+        message.append(affordableHousing  + "Sincerely, " + name + " ZipCode: " + zip)
 
     elif prompt == "Racial Redlining":
         #message = allPrompts[3]
