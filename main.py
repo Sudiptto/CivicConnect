@@ -4,7 +4,7 @@ from emailTrack import *
 from allZipcode import *
 import secrets
 from passwords import *
-from analysis import * 
+from analysis import *
 from prompts import *
 
 
@@ -28,14 +28,14 @@ mail.init_app(app)
 token_data = {}
 reasoning = ""
 
-# start page 
+# start page
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         # get client side IP (used to check if the state address matches the IP address) -> meant to prevent people from lying about their location
         # Note: THE IP ADDRESS works but for local testing it returns back the local host (However, when deployed it will return the correct IP address)!
         ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
-        
+
         # for local testing
         ip_address = ip
 
@@ -48,7 +48,7 @@ def home():
         # Access form data
         first_name = request.form['firstName']
         last_name = request.form['lastName']
-        zip_code = request.form['zipCode'] # turn to integer -> after we check if its numeric 
+        zip_code = request.form['zipCode'] # turn to integer -> after we check if its numeric
         state = request.form['state']
 
         # VALIDATE IS ZIPCODE IS NUMERIC
@@ -57,7 +57,7 @@ def home():
 
         #zip_code = int(zip_code)
 
-        # VALIDATE BOTH ZIP AND CITY DATA -> DONT USE THE API FOR NOW 
+        # VALIDATE BOTH ZIP AND CITY DATA -> DONT USE THE API FOR NOW
         validateZipState = searchAndVerify(zipcodeData, zip_code, state)
 
 
@@ -66,13 +66,13 @@ def home():
             #flash('Correct Move on!', category='error')
             session['valid_zip_state'] = True
 
-            # Encrypt -> First Name, Last Name and Email  -> use sha256 
-            session['first_name'] = first_name  
+            # Encrypt -> First Name, Last Name and Email  -> use sha256
+            session['first_name'] = first_name
             session['ZipCode'] = zip_code
             session['state'] = state
 
             return redirect(url_for('causes'))
-        
+
         elif validateZipState == 'Invalid state and zip combo':
             session['valid_zip_state'] = False
             flash('Invalid state and zip combo', category='error')
@@ -86,13 +86,13 @@ def home():
             session['valid_zip_state'] = False
             flash('Incorrect zipcode', category='error')
 
-        
+
 
     return render_template('home.html')
 
 #add another route that red
 
-# this is the causes page 
+# this is the causes page
 @app.route('/causes',  methods=['GET', 'POST'])
 def causes():
     if not session.get('valid_zip_state'):
@@ -101,23 +101,23 @@ def causes():
 
     first_name = session.get('first_name')
     zipCode = session.get('ZipCode') #  integer
-    state = session.get('state') 
+    state = session.get('state')
 
     allReps = allData(state, zipCode)
     nameList = list(allReps.values())
     emailList = list(allReps.keys())
 
     #print(emailList)
-    # create new session for emailList and nameList 
+    # create new session for emailList and nameList
     session['allReps'] = allReps
-    session['nameList'] = nameList 
+    session['nameList'] = nameList
     session['emailList'] = emailList
     # NOTE WORKS -> REDIRECT TO AN EMAIL route (final route )
     if request.method == 'POST':
-        
+
         cause = request.form['cause']
         causeSubject = ""
-        # fill out the prompts -> check the prompts.py file 
+        # fill out the prompts -> check the prompts.py file
         if cause == 'southern-border':
             causeSubject = 'Southern Border'
 
@@ -130,7 +130,7 @@ def causes():
         if cause == 'poverty':
             causeSubject = 'Poverty'
 
-        # SESSION FOR EMAIL ROUTE 
+        # SESSION FOR EMAIL ROUTE
         session['validSubmit'] = True
         session['causeSubject'] = causeSubject
         return redirect(url_for('email'))
@@ -145,25 +145,25 @@ def email():
     if not session.get('valid_zip_state'):
         errorMessage = 'Incomplete'
         return render_template('error.html', errorMessage = errorMessage)
-    
+
     if not session.get('validSubmit'):
         errorMessage = 'NoSubmit'
-        return render_template('error.html', errorMessage = errorMessage)  
+        return render_template('error.html', errorMessage = errorMessage)
 
-    # grab all information: 
+    # grab all information:
     first_name = session.get('first_name')
     zipCode = session.get('ZipCode') #  integer
     state = session.get('state')
-    # email and name 
+    # email and name
     emailList = session.get('emailList')
     nameList = session.get('nameList')
 
-    # get back dictionary 
+    # get back dictionary
     allReps = session.get('allReps')
 
-    # subject and prompt 
+    # subject and prompt
     subject = session.get('causeSubject')
-    prompt = subjectPrompt(subject,first_name,nameList)
+    prompt = subjectPrompt(subject, first_name, nameList, str(zipCode))
 
 
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
@@ -181,7 +181,7 @@ def queries():
         promptCritique = request.form['critique']
 
 
-        # verify if the email address is valid 
+        # verify if the email address is valid
         # Generate a unique token
         verification_token = secrets.token_hex(16)
 
@@ -197,17 +197,17 @@ def queries():
 
         # Redirect to the route responsible for sending the email
         return redirect(url_for('send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
-    
+
 
     first_name = session.get('first_name')
     return render_template('queries.html', firstName=first_name)
 
 
-# get the email from the fetch request from the email page  (javascript) and print out the email 
+# get the email from the fetch request from the email page  (javascript) and print out the email
 @app.route('/email_sent', methods=['POST'])
 def email_sent():
     data = request.get_json()
-    
+
     email = data['email']
     repEmails = data['repEmails']
     repNames = data['repNames']
@@ -215,7 +215,7 @@ def email_sent():
     prompt = data['prompt']
 
     reasoning = "sendOnBehalf"
-    
+
     # Generate a unique token
     verification_token = secrets.token_hex(16)
     token_data[verification_token] = {
@@ -234,12 +234,12 @@ def email_sent():
 def email_sent_mailto():
 
     data = request.get_json()
-    
+
     subject = data['subject']
     zipCode = int(data['zipCode'])
     route = data['route']
 
-    # send this data over to analytics.csv to be tracked 
+    # send this data over to analytics.csv to be tracked
     # verified -> works
     trackData(zipCode, subject, route)
 
@@ -294,7 +294,7 @@ def send_verification_email_route(email, token, reasoning):
 
         send_verification_email(email, token, reasoning=reasoning)
         #print(verification_data)
-         
+
 
         print('Send on behalf activated!!')
 
@@ -306,14 +306,14 @@ def send_verification_email(email, token, reasoning):
     # to send the verification email use a different email address (for sending)
     app.config["MAIL_USERNAME"] = sendEmail
     app.config["MAIL_PASSWORD"] = sendPassword
-    
+
     # create new mail object
     send_mail = Mail(app)
 
     verification_data = token_data.get(token, {})
 
     if reasoning == 'queries':
-       
+
         optionChosen = verification_data.get('selectOption')
         promptCritique = verification_data.get('promptCritique')
         subject = 'Verify Your Email for Query'
@@ -323,7 +323,7 @@ def send_verification_email(email, token, reasoning):
 
         msg = Message(subject, recipients=[email], html=body)
         send_mail.send(msg)
-    
+
     elif reasoning == "sendOnBehalf":
         # works -> send a verification email out to the user
         #print("Testing again for sendOnBehalf ", verification_data)
@@ -343,7 +343,7 @@ def verify_email(token, reasoning):
     if token in token_data:
         # Retrieve data associated with the token
         data = token_data.pop(token)
-        #print(data)
+        print("All data gotten: ", data)
         # Set a session variable to indicate email verification
         if reasoning == 'queries':
             session['email_verified'] = True
@@ -355,7 +355,7 @@ def verify_email(token, reasoning):
 
             flash('Email verified.', category='success')
 
-            
+
             # send the prompt email to us -> only after verification
             subject = f'User Prompt: {optionChosen}'
             body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">User Prompt Details</h2><p><strong>Email:</strong> {email}</p><p><strong>Option chosen:</strong> {optionChosen}</p><p><strong>Prompt Critique:</strong></p><div style="padding-left:20px;">{promptCritique}</div></div>'
@@ -364,7 +364,7 @@ def verify_email(token, reasoning):
             flash('Email sent successfully! Check inbox for more', category='error')
 
         elif reasoning == 'sendOnBehalf':
-            # - > worked 
+            # - > worked
             #print("Testing at this app route worked!")
 
             # change the repEmails to seperate emails (for testing -> not final product )
@@ -374,7 +374,7 @@ def verify_email(token, reasoning):
             data['repEmails'] = repEmailFake
             data["repNames"] = repNames
 
-            #print(data)
+            print(data)
 
             userEmail = data['email']
 
@@ -383,29 +383,28 @@ def verify_email(token, reasoning):
             prompt = data['prompt']
             repEmails = data['repEmails']
             repNames = data['repNames']
-            
+
             # send the email to the reps -> send one email and send it to all of the rep email addresses
-            
-            body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">{subject}</h2><p><strong>Email:</strong> {userEmail}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Prompt:</strong></p><div style="padding-left:20px;">{prompt}</div><p>This email was sent via the CivicConnect email on behalf of {userEmail}.</p></div>'
+
+            body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">{subject}</h2><p><strong>Email:</strong> {userEmail}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Prompt:</strong></p><div style="padding-left:20px;">{prompt[:-5]}</div><p>This email was sent via the CivicConnect email on behalf of {userEmail}.</p></div>'
             msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
-            
+
             mail.send(msg)
 
-            # get the zipcode and the subject and send the data to the analytics file 
-            zipCode = session.get('ZipCode')
+            # get the zipcode and the subject and send the data to the analytics file
+            zipCode = prompt[-5:]
+
+            print("Check if zipCode exists: ", zipCode)
+
 
             trackData(zipCode, subject, "CivicConnectEmail")
 
-
-
-
-
-    # fix this part down here 
+    # fix this part down here
     else:
         flash('Invalid or expired verification link.', category='error')
     session.clear()
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    #app.run(host=ip, port=5500, debug=True) #-> for local testing 
-    app.run(debug=True)
+    app.run(host=ip, port=5500, debug=True) #-> for local testing
+    #app.run(debug=True)

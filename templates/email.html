@@ -162,10 +162,12 @@
         // send all the email data over 
         var entry = {
             email: email,
+            zipCode: '{{ zipCode }}',
             repEmails: repEmails,
             repNames: repNames,
             subject: '{{ subject }}',
-            prompt: "Dear "+ repNames.join(', ') +  '. {{ prompt[1] }}'
+            prompt: "Dear "+ repNames.join(', ') +  '. {{ prompt[1] }}' 
+            
         }
 
         fetch('/email_sent', {

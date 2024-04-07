@@ -35,24 +35,24 @@ def getAllPrompts(name, represenatives):
     return [southern_border, free_palestine, affordable_housing, poverty]
 
 # prompt function for the /email page 
-def subjectPrompt(prompt,name,represenative):
+def subjectPrompt(prompt,name,represenative, zip):
     message = []
     # get the LIST of prompts
     allPrompts = getAllPrompts(name, represenative)
     if prompt == "Southern Border":
         #message = allPrompts[0]
         message.append(allPrompts[0])
-        message.append(southernBorder + "Sincerely, " + name)
+        message.append(southernBorder + "Sincerely, " + name + " " + zip)
 
     elif prompt == "Free Palestine":
         #message = allPrompts[1]
         message.append(allPrompts[1])
-        message.append(freePalestine  + "Sincerely, " + name)
+        message.append(freePalestine  + "Sincerely, " + name + " " + zip)
 
     elif prompt == "Affordable Housing":
         #message = allPrompts[2]
         message.append(allPrompts[2])
-        message.append(affordableHousing  + "Sincerely, " + name)
+        message.append(affordableHousing  + "Sincerely, " + name + " " + zip)
 
     elif prompt == "Racial Redlining":
         #message = allPrompts[3]
