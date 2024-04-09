@@ -150,7 +150,7 @@ def verify_email(token, reasoning):
 
             # send the email to the reps -> send one email and send it to all of the rep email addresses
 
-            body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">{subject}</h2><p><strong>Email:</strong> {userEmail}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Prompt:</strong></p><div style="padding-left:20px;">{prompt[:-5]}</div><p>This email was sent via the CivicConnect email on behalf of {userEmail}.</p></div>'
+            body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">{subject}</h2><p><strong>Email:</strong> {userEmail}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Prompt:</strong></p><div style="padding-left:20px;">{prompt[:-14]}</div><p>This email was sent via the CivicConnect email on behalf of {userEmail}.</p></div>'
             msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
 
             mail.send(msg)

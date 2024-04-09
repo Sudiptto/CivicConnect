@@ -64,7 +64,7 @@ def searchAndVerify(zipData, zipCode, state):
 
      
 
-# GRAB SENATE AND HOUSE NAMES 
+# GRAB HOUSE AND THEN SENATE NAME
 # key -> email, value - > name
 def allData(state, zipcode):
     allRepData = {}
@@ -84,8 +84,6 @@ def allData(state, zipcode):
 
 #print(allData('NY', 11218))
 
-#print(senateAndhouseEmails('NY', 11218)) 
-#print(senateANDhouseNames('NY', '11218'))
+#print(allData('NY', 11218))
 
 
-# Note for future: analysis on the length of zipcode, only consider the zipcodes whos lengths are 5 to be eligible and the zipcodes whos lengths are 4 or not 5 to uneligible 

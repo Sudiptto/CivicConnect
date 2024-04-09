@@ -17,12 +17,14 @@ def add_zipcode(zipcode):
                "#Email Sent: Southern Border (mailto)",
                "#Email Sent: Free Palestine (mailto)",
                "#Email Sent: Affordable Housing (mailto)",
-               "#Email Sent: Affordable Housing(mailto)",
+               "#Email Sent: Abortion (mailto)",
+
                "#Email Sent: Southern Border (Through CivicConnect)",
                "#Email Sent: Free Palestine (Through CivicConnect)",
                "#Email Sent: Affordable Housing (Through CivicConnect)",
-               "#Email Sent: Affordable Housing (Through CivicConnect)",
+               "#Email Sent: Abortion (Through CivicConnect)",
                "#Total Emails (mailto)",
+
                "#Total Emails (Through CivicConnect)",
                "#Total Emails"]
 
@@ -50,14 +52,14 @@ civic_dict = {
     "Southern Border": "Southern Border (Through CivicConnect)",
     "Free Palestine": "Free Palestine (Through CivicConnect)",
     "Affordable Housing": "Affordable Housing (Through CivicConnect)",
-    "Poverty": "Poverty (Through CivicConnect)"}
+    "Abortion": "Abortion (Through CivicConnect)"}
 
 # dictionary with subject and column name (for the emails through mailto)
 mailto_dict = {
     "Southern Border": "Southern Border (mailto)",
     "Free Palestine": "Free Palestine (mailto)",
     "Affordable Housing": "Affordable Housing (mailto)",
-    "Poverty": "Poverty (mailto)"
+    "Abortion": "Abortion (mailto)"
 }
 
 def trackData(zipcode, subject, route):
@@ -103,7 +105,7 @@ trackData(11218, "Southern Border", "CivicConnectEmail")"""
 
 
 """df = pd.DataFrame()
-column_names = ['ZipCode', 'Southern Border (mailto)', 'Free Palestine (mailto)', 'Affordable Housing (mailto)', 'Poverty (mailto)', 'Southern Border (Through CivicConnect)', 'Free Palestine (Through CivicConnect)', 'Affordable Housing (Through CivicConnect)', 'Poverty (Through CivicConnect)', 'Total Emails (mailto)', 'Total Emails (Through CivicConnect)', 'Total Emails']
+column_names = ['ZipCode', 'Southern Border (mailto)', 'Free Palestine (mailto)', 'Affordable Housing (mailto)', 'Abortion (mailto)', 'Southern Border (Through CivicConnect)', 'Free Palestine (Through CivicConnect)', 'Affordable Housing (Through CivicConnect)', 'Abortion (Through CivicConnect)', 'Total Emails (mailto)', 'Total Emails (Through CivicConnect)', 'Total Emails']
 
 
 df = pd.DataFrame(columns=column_names)

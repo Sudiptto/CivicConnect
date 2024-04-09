@@ -124,8 +124,8 @@ def causes():
         if cause == 'affordable-housing':
             causeSubject = 'Affordable Housing'
 
-        if cause == 'poverty':
-            causeSubject = 'Poverty'
+        if cause == 'abortions':
+            causeSubject = 'Abortion'
 
         # SESSION FOR EMAIL ROUTE
         session['validSubmit'] = True
@@ -250,5 +250,5 @@ def exit():
 
 
 if __name__ == '__main__':
-    #app.run(host=ip, port=5500, debug=True) #-> for local testing
-    app.run(debug=True)
+    app.run(host=ip, port=5500, debug=True) #-> for local testing
+    #app.run(debug=True)

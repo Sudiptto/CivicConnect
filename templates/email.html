@@ -14,11 +14,7 @@
       <div class="content-box">
 
             <h1 class="heading">Hello {{firstName}}, please read over the email!</h1>
-            <!--
-                How to create values in Jinja 
-            <h1>{% set testing = 'it worked' %}
-                {% set another = testing %}
-                {{ another }}</h1> -->
+
 
                 <!-- Recipients -->
                 <div>
@@ -50,7 +46,7 @@
                     <h3 style="color: #000; margin-bottom: 5px;">Message:</h3>
                     <div class="message-container">
                         <p class="message-text">
-                           <span id="testing">Dear</span> {{ prompt[0]|safe }}
+                           <span id="greeting">Dear</span> {{ prompt[0]|safe }}
                         </p>
                     </div>
                 </div>
@@ -59,7 +55,7 @@
                 <a id="send-email-button" class="send-email-button" action="/">Send Email</a>
 
                 <!--Send through us-->
-                <button class="send-email-button" onclick="sendEmail()"  id="sendMail" disabled>Can't send? Send through us!</button>
+                <button class="send-email-button" onclick="sendEmail()"  id="sendMail">Can't send? Send through us!</button>
                 
                 <br>
                 <form method="POST" action="{{ url_for('exit') }}">
@@ -73,7 +69,7 @@
 <script>
     // read the allReps jinja data -> object 
     var allReps = {{ allReps|tojson|safe }};
-    
+    console.log(allReps);
     // Get the send button
     var sendButton = document.getElementById('sendMail');
         
@@ -95,13 +91,6 @@
 
         repEmails = allRepEmails;
 
-        // If no checkboxes are selected, keep the send button disabled
-        if (allRepEmails.length === 0) {
-            sendButton.disabled = true;
-        } else {
-            sendButton.disabled = false;
-        }
-
         // push the rep name data
         var allRepNames = [];
         for(var i=0; i < allRepEmails.length; i++){
@@ -109,14 +98,25 @@
         }
 
         repNames = allRepNames;
+           
+        // the first two
+        // Replace the last comma with 'and'
+        var greetingNames = allRepNames.join(', ');
+        if (allRepNames.length > 1) {
+            var lastComma = greetingNames.lastIndexOf(',');
+            greetingNames = greetingNames.substring(0, lastComma) + ' and' + greetingNames.substring(lastComma + 1);
+        }
+
        
-        document.getElementById("testing").textContent = "Dear " + allRepNames.join(', ');
+        document.getElementById("greeting").textContent = "Dear " + greetingNames;
+
+
         console.log(allRepNames)
         alert(allRepEmails);
 
 
         // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
-        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + allRepNames.join(', ') + "  {{ prompt[1] }}");
+        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + greetingNames + ".  {{ prompt[1] }}");
         document.getElementById('send-email-button').setAttribute('href', mailtoLink);
         document.getElementById('send-email-button').addEventListener('click', function() {
             // send the data over to /email_sent_mailto
@@ -146,8 +146,13 @@
 
     // send the email (option for the can't send? Send through us option )
     function sendEmail() {
-        // - > works data gets sent through 
-        //console.log(repEmails, repNames);
+        // do if statements to check if the user atleast picked ONE representative
+
+        if (repEmails.length === 0) {
+            alert("Please select at least one representative to send the email to!g ");
+            return;
+        }
+
         let email = prompt("Please enter your email: ");
 
         // if statement to check if its a valid email (in the sense that at most 64 characters, one @ sign, check if the domain is valud doesnt have special cahracters, valid extension etc )
@@ -158,7 +163,11 @@
             return;
         }
         
-
+        var greetingNames = repNames.join(', ');
+        if (repNames.length > 1) {
+            var lastComma = greetingNames.lastIndexOf(',');
+            greetingNames = greetingNames.substring(0, lastComma) + ' and' + greetingNames.substring(lastComma + 1);
+        }
         
         // send all the email data over 
         var entry = {
@@ -167,7 +176,7 @@
             repEmails: repEmails,
             repNames: repNames,
             subject: '{{ subject }}',
-            prompt: "Dear "+ repNames.join(', ') +  '. {{ prompt[1] }}' 
+            prompt: "Dear "+ greetingNames +  '. {{ prompt[1] }}' 
             
         }
 
