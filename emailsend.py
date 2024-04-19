@@ -15,11 +15,11 @@ mail = Mail(app)
 
 def send_verification_email(email, token, reasoning):
     # to send the verification email use a different email address (for sending)
-    app.config["MAIL_USERNAME"] = sendEmail
-    app.config["MAIL_PASSWORD"] = sendPassword
+    app.config["MAIL_USERNAME"] = verifyCivicEmail
+    app.config["MAIL_PASSWORD"] = verifyCivicAppPass
 
     # create new mail object
-    send_mail = Mail(app)
+    verify_mail = Mail(app)
 
     verification_data = token_data.get(token, {})
 
@@ -33,7 +33,7 @@ def send_verification_email(email, token, reasoning):
         body = f'Click the following link to verify your email: {verification_link} <br> <b>Here is your inputs:</b> <br> <p>Option chosen: {optionChosen} <br> {promptCritique} '
 
         msg = Message(subject, recipients=[email], html=body)
-        send_mail.send(msg)
+        verify_mail.send(msg)
 
     elif reasoning == "sendOnBehalf":
         # works -> send a verification email out to the user
@@ -42,7 +42,7 @@ def send_verification_email(email, token, reasoning):
         body = f'Click the following link to verify your email: {verification_link} <br>'
         subject = 'Verify Your Email!'
         msg = Message(subject, recipients=[email], html=body)
-        send_mail.send(msg)
+        verify_mail.send(msg)
 
         app.config["MAIL_USERNAME"] = emailName
         app.config["MAIL_PASSWORD"] = emailPassword
@@ -148,12 +148,20 @@ def verify_email(token, reasoning):
             repEmails = data['repEmails']
             repNames = data['repNames']
 
+            # send through the sendcivic gmail (not verifycivic gmail)
+            app.config["MAIL_USERNAME"] = sendEmail
+            app.config["MAIL_PASSWORD"] = sendPassword
+            
+            # create new mail object
+            send_mail = Mail(app)
+            
+
             # send the email to the reps -> send one email and send it to all of the rep email addresses
 
             body = f'<div style="background-color:#f2f2f2;padding:20px;"><h2 style="color:#333;">{subject}</h2><p><strong>Email:</strong> {userEmail}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Prompt:</strong></p><div style="padding-left:20px;">{prompt[:-14]}</div><p>This email was sent via the CivicConnect email on behalf of {userEmail}.</p></div>'
-            msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
+            send_msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
 
-            mail.send(msg)
+            send_mail.send(send_msg)
 
             # get the zipcode and the subject and send the data to the analytics file
             zipCode = prompt[-5:]
@@ -167,4 +175,5 @@ def verify_email(token, reasoning):
     else:
         flash('Invalid or expired verification link.', category='error')
     session.clear()
-    return redirect(url_for('home'))
+
+    return redirect(url_for('verifyEmailSuccess', verified="true"))

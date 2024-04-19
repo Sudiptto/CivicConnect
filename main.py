@@ -77,7 +77,7 @@ def home():
         # works
         elif state != ipState:
             session['valid_zip_state'] = False
-            flash('Please enter the current state and zipcode you are in!', category='error')
+            flash('Please enter the current state and zipcode you are in! Please disable VPNs (we want you to send emails to your CORRECT represenatives)', category='error')
 
         else:
             session['valid_zip_state'] = False
@@ -199,6 +199,18 @@ def queries():
     first_name = session.get('first_name')
     return render_template('queries.html', firstName=first_name)
 
+# email for verified email addresses
+@app.route('/verifyEmailSuccess/<verified>')
+def verifyEmailSuccess(verified):
+    #print(verified)
+    if verified == 'true':
+        print('Email verified! -> valid!! ')
+    else:
+        print("REDIRECT")
+        return redirect(url_for('home'))
+
+    return render_template('emailVerified.html')
+
 
 # get the email from the fetch request from the email page  (javascript) and print out the email
 @app.route('/email_sent', methods=['POST'])
@@ -249,6 +261,16 @@ def exit():
     return redirect(url_for('home'))
 
 
+# INVALID URL
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('page_not_found.html'), 404
+
+# INVALID SERVER ERROR
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('servererror.html'), 500
+
 if __name__ == '__main__':
-    app.run(host=ip, port=5500, debug=True) #-> for local testing
-    #app.run(debug=True)
+    #app.run(host=ip, port=5500, debug=True) #-> for local testing
+    app.run(debug=True)
