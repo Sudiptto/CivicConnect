@@ -8,7 +8,6 @@ from passwords import *
 from analysis import *
 from prompts import *
 from emailsend import email_bp  # Import the blueprint from emailsend.py
-
 mail = Mail(app)
 
 # Configure Flask-Mail settings
@@ -25,23 +24,11 @@ mail.init_app(app)
 # Register the email_bp Blueprint with the app
 app.register_blueprint(email_bp)
 
+
 # start page
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        # get client side IP (used to check if the state address matches the IP address) -> meant to prevent people from lying about their location
-        # Note: THE IP ADDRESS works but for local testing it returns back the local host (However, when deployed it will return the correct IP address)!
-        ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
-
-        # for local testing
-        ip_address = ipAddress
-
-        # get the ip_address look up and see what state its linked to and if it matches the state that the user inputted -> use IP address look up api
-        # website - > https://ip-api.com/docs/api:json
-        ipLookup = requests.get(f"http://ip-api.com/json/{ip_address}").json()
-        ipState = ipLookup['region']
-
-
         # Access form data
         first_name = request.form['firstName']
         last_name = request.form['lastName']
@@ -58,7 +45,7 @@ def home():
         validateZipState = searchAndVerify(zipcodeData, zip_code, state)
 
 
-        if validateZipState == 'Correct state!' and state==ipState:
+        if validateZipState == 'Correct state!':
             #print('test')
             #flash('Correct Move on!', category='error')
             session['valid_zip_state'] = True
@@ -74,11 +61,6 @@ def home():
             session['valid_zip_state'] = False
             flash('Invalid state and zip combo', category='error')
 
-        # works
-        elif state != ipState:
-            session['valid_zip_state'] = False
-            flash('Please enter the current state and zipcode you are in! Please disable VPNs (we want you to send emails to your CORRECT represenatives)', category='error')
-
         else:
             session['valid_zip_state'] = False
             flash('Incorrect zipcode', category='error')
@@ -87,7 +69,6 @@ def home():
 
     return render_template('home.html')
 
-#add another route that red
 
 # this is the causes page
 @app.route('/causes',  methods=['GET', 'POST'])
@@ -113,27 +94,14 @@ def causes():
     if request.method == 'POST':
 
         cause = request.form['cause']
-        causeSubject = ""
-        # fill out the prompts -> check the prompts.py file
-        if cause == 'southern-border':
-            causeSubject = 'Southern Border'
-
-        if cause == 'free-palestine':
-            causeSubject = 'Free Palestine'
-
-        if cause == 'affordable-housing':
-            causeSubject = 'Affordable Housing'
-
-        if cause == 'abortions':
-            causeSubject = 'Abortion'
-
+    
         # SESSION FOR EMAIL ROUTE
         session['validSubmit'] = True
-        session['causeSubject'] = causeSubject
+        session['causeSubject'] = cause
         return redirect(url_for('email'))
 
     # check prompts.py for getAllPrompts()
-    return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList, allPrompts = getAllPrompts(first_name, nameList))
+    return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList, allPrompts = getAllPrompts(first_name))
 
 
 # works

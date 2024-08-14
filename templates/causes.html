@@ -15,22 +15,14 @@
       <h1 class="heading">HI {{firstName.upper()}}, PLEASE PICK A CAUSE!</h1>
       <p style="color:black;">Prompts researched and written by <a href="https://www.linkedin.com/in/lukecorless/">Luke Corless</a></p>
       <!--FOR PROMPTS GO TO prompts.py-->
-      <!--As of 3/21 changing the values and prompts to match final product-->
+
       <form method="POST">
         <div class="causes-list">
-          <label class="cause-item" onclick="openModal('Southern Border', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[0]}}')">
-              <input type="radio" name="cause" value="southern-border" required> Southern Border 
+          {% for cause, prompt in allPrompts.items() %}
+          <label class="cause-item" onclick="openModal('{{ cause }}', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{ prompt }}')">
+              <input type="radio" name="cause" value="{{ cause }}" required> {{ cause.replace('-', ' ').title() }} 
           </label>
-          <label class="cause-item" onclick="openModal('Free Palestine', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[1]}}')">
-              <input type="radio" name="cause" value="free-palestine" required> Free Palestine
-          </label>
-          <label class="cause-item" onclick="openModal('Racial Redlining', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[2]}}')">
-              <input type="radio" name="cause" value="affordable-housing" required> Affordable Housing
-          </label>
-          <label class="cause-item" onclick="openModal('Abortions', 'Your representatives: {% for name in nameList %} {{name}}, {% endfor %}<br>Email Addresses: {% for email in emailList %} {{email}} {% endfor %}<br><br>{{allPrompts[3]}}')">
-              <input type="radio" name="cause" value="abortions" required> Abortions
-          </label>
-          <!-- Add more causes as needed -->
+          {% endfor %}
       </div>
       
       <button class="submit-button">Submit</button>
