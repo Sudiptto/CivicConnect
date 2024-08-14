@@ -6,3 +6,5 @@ allZipcode.py
 env
 senatordata.py
 analytics.csv
+updatePrompt/credentials.json
+updatePrompt/token.json
