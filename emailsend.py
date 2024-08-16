@@ -4,7 +4,6 @@ from app import *
 from passwords import *
 import secrets
 from analysis import *
-from emailTrack import *
 
 
 # Create a Blueprint instance
@@ -169,7 +168,6 @@ def verify_email(token, reasoning):
             print("Check if zipCode exists: ", zipCode)
 
 
-            trackData(zipCode, subject, "CivicConnectEmail")
 
     # fix this part down here
     else:

@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from app import *
 from flask_mail import Mail, Message
-from emailTrack import *
 from allZipcode import *
 import secrets
 from passwords import *
@@ -216,9 +215,6 @@ def email_sent_mailto():
     zipCode = int(data['zipCode'])
     route = data['route']
 
-    # send this data over to analytics.csv to be tracked
-    # verified -> works
-    trackData(zipCode, subject, route)
 
     return jsonify(data)
 

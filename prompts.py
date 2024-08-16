@@ -3,6 +3,7 @@ import json
 
 # function to load JSON data
 def load_prompts():
+    # MODIFY FOR PYTHON ANYWHERE HOSTING
     with open(os.path.join('UpdatePrompt', 'prompts.json'), 'r', encoding='utf-8') as file:
         return json.load(file)
     
