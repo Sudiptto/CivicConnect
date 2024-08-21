@@ -7,6 +7,7 @@ from passwords import *
 from analysis import *
 from prompts import *
 from emailsend import email_bp  # Import the blueprint from emailsend.py
+from models import *  # Import the db and User model
 mail = Mail(app)
 
 # Configure Flask-Mail settings
@@ -22,6 +23,7 @@ mail.init_app(app)
 
 # Register the email_bp Blueprint with the app
 app.register_blueprint(email_bp)
+
 
 
 # start page

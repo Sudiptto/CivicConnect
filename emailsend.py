@@ -4,6 +4,7 @@ from app import *
 from passwords import *
 import secrets
 from analysis import *
+from addData import *
 
 
 # Create a Blueprint instance
@@ -163,10 +164,25 @@ def verify_email(token, reasoning):
             send_mail.send(send_msg)
 
             # get the zipcode and the subject and send the data to the analytics file
-            zipCode = prompt[-5:]
+            zipCode = int(prompt[-5:])
 
-            print("Check if zipCode exists: ", zipCode)
+            #print("Check if zipCode exists: ", zipCode)
+            print("User Email: ", userEmail)
+            print("Subject: ", subject)
+            print("ZipCode: ", zipCode)
+            print("Representative Names: ", repNames) # this is an array
 
+            #print("Final place before email is sent: ")
+            
+            # functions below are to add the data into the database
+            add_unique_email(userEmail, zipCode)
+            add_or_increment_topic(subject)
+            update_zipcode_data(zipCode, subject)
+
+            for rep in repNames:
+                update_representative_data(rep, subject)
+
+            
 
 
     # fix this part down here
