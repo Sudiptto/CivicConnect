@@ -52,7 +52,7 @@
                 </div>
                 <!--SEND THE MAIL-->
                 <!--ISSUE ARRISED HERE, MAILTO -> LIMIT + HTML/CSS TAGS NOT SUPPORTED-->
-                <a id="send-email-button" class="send-email-button" action="/">Send Email</a>
+                <a id="send-email-button" class="send-email-button" action="/">Send Email (Best On Mobile)</a>
 
                 <!--Send through us-->
                 <button class="send-email-button" onclick="sendEmail()"  id="sendMail">Can't send? Send through us!</button>
@@ -149,7 +149,7 @@
         // do if statements to check if the user atleast picked ONE representative
 
         if (repEmails.length === 0) {
-            alert("Please select at least one representative to send the email to!g ");
+            alert("Please select at least one representative to send the email to! ");
             return;
         }
 
@@ -193,7 +193,9 @@
             console.error('Error:', error);
         });
 
-        alert("Email recieved! Check your inbox for an email confirmation, click the link to send the email. You should recieve a CC of the email sent. Thank you!");
+        alert("Email recieved! Check your inbox (make sure to check spam to) for an email confirmation, click the link to send the email. You should recieve a CC of the email sent. Thank you!");
+        
+        
         window.location.href = "/exit";
     }
 

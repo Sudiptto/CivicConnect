@@ -1,0 +1,5 @@
+CivicConnect:
+
+Beofre doing the Can't send? Send through us! -> to prevent people from spamming emails use a CAPTCHA before sending
+
+Also to prevent this: 2024-08-30 17:21:59,828: OSError: write error make sure to inform the user to stay on the site until the emails have been sent not immediately close it
