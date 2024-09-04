@@ -38,12 +38,12 @@ def add_or_increment_topic(topic):
         if existing_topic:
             # Topic exists, increment the occurrence count
             existing_topic.occurrences += 1
-            print(f"Incremented occurrences for topic '{topic}' to {existing_topic.occurrences}.")
+            #print(f"Incremented occurrences for topic '{topic}' to {existing_topic.occurrences}.")
         else:
             # Topic doesn't exist, add it with occurrences starting at 1
             new_topic = Occurrence(topic=topic, occurrences=1)
             db.session.add(new_topic)
-            print(f"Added new topic '{topic}' with occurrences starting at 1.")
+            #print(f"Added new topic '{topic}' with occurrences starting at 1.")
 
         # Commit the session to save changes
         db.session.commit()
@@ -66,7 +66,7 @@ def update_zipcode_data(zip_code, topic):
             # Increment the count for the specified topic
             setattr(zipcode_data, topic, current_value + 1)
         else:
-            print(f"topic '{topic}' is not a valid field.")
+            #print(f"topic '{topic}' is not a valid field.")
             return
 
         # Update unique_emails count

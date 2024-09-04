@@ -24,8 +24,6 @@ mail.init_app(app)
 # Register the email_bp Blueprint with the app
 app.register_blueprint(email_bp)
 
-
-
 # start page
 @app.route('/', methods=['GET', 'POST'])
 def home():
