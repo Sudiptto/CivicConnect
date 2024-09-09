@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <title>CivicConnect</title>
-  <!--GOOGLE FONT-->
+    <!-- GOOGLE FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch+Pop&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch+Pop&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <!-- reCAPTCHA JavaScript -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -100,6 +102,9 @@
     <option value="WY">Wyoming</option>
 </select>
     <br>
+
+      <div class="g-recaptcha" data-sitekey="6LfuuTYqAAAAAHzwCaIIxNIY9GWPMSY1Z1Gr6K0C" style="padding-bottom: 1em;" aria-required="true"></div>
+
         <button type="submit">Submit</button>
 
         <p>What is <b>CivicConnect?</b> Essentially it's a way to streamline the process of emailing your representatives, emailing them traditioanlly often requires filling out a bunch of forms. CivicConnect aims to make connecting to your representatives easier!</p>

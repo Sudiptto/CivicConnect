@@ -24,10 +24,33 @@ mail.init_app(app)
 # Register the email_bp Blueprint with the app
 app.register_blueprint(email_bp)
 
+# for re-captcha
+RECAPTCHA_SECRET_KEY = privateCaptcha  
+
 # start page
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
+        # for captcha
+        recaptcha_response = request.form.get('g-recaptcha-response')
+
+        if not recaptcha_response:
+            flash('Please complete the reCAPTCHA.', category='error')
+            
+        
+        # Verify reCAPTCHA
+        payload = {
+            'secret': RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        recaptcha_verification = requests.post('https://www.google.com/recaptcha/api/siteverify', data=payload)
+        result = recaptcha_verification.json()
+
+        if not result.get('success'):
+            flash('reCAPTCHA verification failed. Please try again.', category='error')
+            return redirect(url_for('home'))
+        
+
         # Access form data
         first_name = request.form['firstName']
         last_name = request.form['lastName']
@@ -38,7 +61,6 @@ def home():
         if zip_code.isnumeric() == False:
             flash("Please enter a valid 5 DIGIT INTEGER zipcode", category="error")
 
-        #zip_code = int(zip_code)
 
         # VALIDATE BOTH ZIP AND CITY DATA -> DONT USE THE API FOR NOW
         validateZipState = searchAndVerify(zipcodeData, zip_code, state)
