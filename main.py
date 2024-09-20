@@ -177,6 +177,7 @@ def email_sent():
     repNames = data['repNames']
     subject = data['subject']
     prompt = data['prompt']
+    firstName = session.get("first_name")
 
     reasoning = "sendOnBehalf"
 
@@ -187,7 +188,9 @@ def email_sent():
             'repEmails': repEmails,
             'repNames': repNames,
             'subject': subject,
-            'prompt': prompt
+            'prompt': prompt,
+            'firstName': firstName
+
     }
 
     return redirect(url_for('email_bp.send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))

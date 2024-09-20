@@ -4,6 +4,7 @@ from passwords import *
 import secrets
 from analysis import *
 from addData import *
+from brevoSend import *
 
 
 # Create a Blueprint instance
@@ -127,8 +128,19 @@ def verify_email(token, reasoning):
             prompt = data['prompt']
             repEmails = data['repEmails']
             repNames = data['repNames']
+            firstName = data['firstName']
             
-        
+            # firstName -> works 
+            print("First name: ", firstName)
+            
+            print("DATA BELOW: ")
+
+            print("repEmails: ", repEmails)
+            print("repNames: ", repNames)
+
+            # test createEmailList function
+            print(createEmailList(repEmails, repNames))
+
             # send the email to the reps -> send one email and send it to all of the rep email addresses
 
             body = f'''
@@ -160,10 +172,23 @@ def verify_email(token, reasoning):
                 </div>
 
             '''
+            # sender info and cc email name information
+            sender = {"name":"Civic Connect", "email":"send@civicconnect.net"}
+            cc = [{"email": userEmail, "name": firstName}]
 
-            send_msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
+            # get back array of objects for repEmails
+            repEmailObject = createEmailList(repEmails, repNames)
 
-            mail.send(send_msg)
+            # Reply to email
+            reply_to = {"email":"civic@civicconnect.net","name":"Civic Connect"}
+
+            # Old Flask mail -> USE BREVO instead
+            #send_msg = Message(subject, sender=userEmail, recipients=repEmails, cc=[userEmail], html=body)
+
+            #mail.send(send_msg)
+
+            # BREVO email send
+            sendEmailThroughBrevo(sender, subject, body, repEmailObject, cc, reply_to)
 
             # get the zipcode and the subject and send the data to the analytics file
             zipCode = int(prompt[-5:])

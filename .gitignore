@@ -8,3 +8,5 @@ senatordata.py
 analytics.csv
 updatePrompt/credentials.json
 updatePrompt/token.json
+brevo.py
+brevo2.py
