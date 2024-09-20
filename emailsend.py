@@ -198,8 +198,6 @@ def verify_email(token, reasoning):
             print("Subject: ", subject)
             print("ZipCode: ", zipCode)
             print("Representative Names: ", repNames) # this is an array
-
-            #print("Final place before email is sent: ")
             
             # functions below are to add the data into the database
             add_unique_email(userEmail, zipCode)
