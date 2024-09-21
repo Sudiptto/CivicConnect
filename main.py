@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from app import *
-from flask_mail import Mail, Message
 from allZipcode import *
 import secrets
 from passwords import *
@@ -8,7 +7,7 @@ from analysis import *
 from prompts import *
 from emailsend import email_bp  # Import the blueprint from emailsend.py
 from models import *  # Import the db and User model
-mail = Mail(app)
+
 
 # Configure Flask-Mail settings
 app.config["MAIL_SERVER"] = 'smtp.gmail.com'
@@ -16,8 +15,8 @@ app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
 # mail username and password will change based on sending vs recieving email -> default recieving email
-app.config["MAIL_USERNAME"] = emailName
-app.config["MAIL_PASSWORD"] = emailPassword
+app.config["MAIL_USERNAME"] = sendEmail
+app.config["MAIL_PASSWORD"] = sendPassword
 app.config["MAIL_DEFAULT_SENDER"] = 'your_email@example.com'
 mail.init_app(app)
 
@@ -154,45 +153,13 @@ def email():
 
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
 
-# THIS PAGE -> Users can add / update their queries
-@app.route('/queries', methods=['POST', 'GET'])
-def queries():
-    if not session.get('valid_zip_state'):
-        errorMessage = 'Incomplete'
-        return render_template('error.html', errorMessage=errorMessage)
-
-    if request.method == 'POST':
-        selectOption = request.form['emailReason']
-        email = request.form['email']
-        promptCritique = request.form['critique']
-
-
-        # verify if the email address is valid
-        # Generate a unique token
-        verification_token = secrets.token_hex(16)
-
-        # Store the token and associated data in the dictionary
-        token_data[verification_token] = {
-            'email': email,
-            'selectOption': selectOption,
-            'promptCritique': promptCritique
-        }
-
-        reasoning = "queries"
-        #session['reasoning'] = reasoning
-
-        # Redirect to the route responsible for sending the email
-        return redirect(url_for('email_bp.send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
-
-
-    first_name = session.get('first_name')
-    return render_template('queries.html', firstName=first_name)
 
 # email for verified email addresses
 @app.route('/verifyEmailSuccess/<verified>')
 def verifyEmailSuccess(verified):
     #print(verified)
     if verified == 'true':
+        # ISSUE FROM HERE THIS IS WHERE LAG HAPPENS
         print('Email verified! -> valid!! ')
     else:
         print("REDIRECT")
@@ -211,6 +178,7 @@ def email_sent():
     repNames = data['repNames']
     subject = data['subject']
     prompt = data['prompt']
+    firstName = session.get("first_name")
 
     reasoning = "sendOnBehalf"
 
@@ -221,7 +189,9 @@ def email_sent():
             'repEmails': repEmails,
             'repNames': repNames,
             'subject': subject,
-            'prompt': prompt
+            'prompt': prompt,
+            'firstName': firstName
+
     }
 
     return redirect(url_for('email_bp.send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
@@ -232,11 +202,6 @@ def email_sent():
 def email_sent_mailto():
 
     data = request.get_json()
-
-    subject = data['subject']
-    zipCode = int(data['zipCode'])
-    route = data['route']
-
 
     return jsonify(data)
 

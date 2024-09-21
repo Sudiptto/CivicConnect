@@ -65,6 +65,7 @@
         </div>
       </div>
     </div>
+
     <!--SCRIPT BELOW-->
 <script>
     // read the allReps jinja data -> object 
@@ -176,8 +177,7 @@
             repEmails: repEmails,
             repNames: repNames,
             subject: '{{ subject }}',
-            prompt: "Dear "+ greetingNames +  '. {{ prompt[1] }}' 
-            
+            prompt: "Dear "+ greetingNames +  '. {{ prompt[1] }}',            
         }
 
         fetch('/email_sent', {

@@ -18,7 +18,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh; /* Full height of the viewport */
+    min-height: 100vh; /* Allow container to grow as needed */
+    padding-top: 20px; /* Add padding to prevent cut-off at the top */
   }
   
   .content-box {
