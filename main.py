@@ -124,6 +124,7 @@ def causes():
     return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList, allPrompts = getAllPrompts(first_name))
 
 
+
 # works
 @app.route('/email', methods=['GET', 'POST'])
 def email():
@@ -153,6 +154,21 @@ def email():
 
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
 
+
+# Verify email
+@app.route('/verifyEmail')
+def verifyEmail():
+    if not session.get('valid_zip_state'):
+        errorMessage = 'Incomplete'
+        return render_template('error.html', errorMessage = errorMessage)
+
+    if not session.get('validSubmit'):
+        errorMessage = 'NoSubmit'
+        return render_template('error.html', errorMessage = errorMessage)
+    
+    # note need a second route to see if the email data was collected 
+
+    return render_template('verification.html')
 
 # email for verified email addresses
 @app.route('/verifyEmailSuccess/<verified>')
