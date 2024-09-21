@@ -11,9 +11,6 @@ from brevoSend import *
 email_bp = Blueprint('email_bp', __name__)
 
 def send_verification_email(email, token, reasoning):
-
-
-
     if reasoning == "sendOnBehalf":
         # works -> send a verification email out to the user
         #print("Testing again for sendOnBehalf ", verification_data)
@@ -110,7 +107,7 @@ def verify_email(token, reasoning):
     if token in token_data:
         # Retrieve data associated with the token
         data = token_data.pop(token)
-        print("All data gotten: ", data)
+        #print("All data gotten: ", data)
         # Set a session variable to indicate email verification
         if reasoning == 'sendOnBehalf':
             # - > worked
@@ -119,7 +116,7 @@ def verify_email(token, reasoning):
             # change the repEmails to seperate emails (for testing -> not final product )
             # site for disposable emails - > https://temp-mail.org/en/
 
-            print(data)
+            #print(data)
 
             userEmail = data['email']
 
@@ -131,15 +128,15 @@ def verify_email(token, reasoning):
             firstName = data['firstName']
             
             # firstName -> works 
-            print("First name: ", firstName)
+            #print("First name: ", firstName)
             
-            print("DATA BELOW: ")
+            #print("DATA BELOW: ")
 
-            print("repEmails: ", repEmails)
-            print("repNames: ", repNames)
+            #print("repEmails: ", repEmails)
+            #print("repNames: ", repNames)
 
             # test createEmailList function
-            print(createEmailList(repEmails, repNames))
+            #print(createEmailList(repEmails, repNames))
 
             # send the email to the reps -> send one email and send it to all of the rep email addresses
 
@@ -194,10 +191,10 @@ def verify_email(token, reasoning):
             zipCode = int(prompt[-5:])
 
             #print("Check if zipCode exists: ", zipCode)
-            print("User Email: ", userEmail)
-            print("Subject: ", subject)
-            print("ZipCode: ", zipCode)
-            print("Representative Names: ", repNames) # this is an array
+            #print("User Email: ", userEmail)
+            #print("Subject: ", subject)
+            #print("ZipCode: ", zipCode)
+            #print("Representative Names: ", repNames) # this is an array
             
             # functions below are to add the data into the database
             add_unique_email(userEmail, zipCode)

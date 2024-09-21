@@ -159,6 +159,7 @@ def email():
 def verifyEmailSuccess(verified):
     #print(verified)
     if verified == 'true':
+        # ISSUE FROM HERE THIS IS WHERE LAG HAPPENS
         print('Email verified! -> valid!! ')
     else:
         print("REDIRECT")
