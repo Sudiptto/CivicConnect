@@ -18,7 +18,6 @@
             grid-template-rows: repeat(2, 1fr);
             z-index: -1;
         }
-
         .box {
             background-size: cover;
             background-position: center;
@@ -26,12 +25,10 @@
             align-items: center;
             justify-content: center;
         }
-
         #box1 { background-image: url('/static/images/img1.png'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
         #box2 { background-image: url('/static/images/img2.jpg'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
         #box3 { background-image: url('/static/images/img3.jpg'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
         #box4 { background-image: url('/static/images/img4.png'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
-
         .form-container {
             box-shadow: 0 0 30px #000000;
             width: 90%;
@@ -42,7 +39,6 @@
             box-sizing: border-box;
             z-index: 1;
         }
-
         .digit-box {
             width: 3rem;
             height: 3rem;
@@ -52,20 +48,17 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-
         .digit-container {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 1.25rem;
         }
-
         .button-container {
             display: flex;
             justify-content: center;
             gap: 0.625rem;
         }
-
         .submit-button, .send-again-button {
             padding: 0.625rem 1.25rem;
             font-size: 1rem;
@@ -76,25 +69,21 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s, font-size 0.3s;
         }
-
         .submit-button:hover, .send-again-button:hover {
             background-color: #2980b9;
             transform: scale(1.05);
             font-size: 1.125rem;
         }
-
         .submit-button:disabled, .send-again-button:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
-
         .timer {
             text-align: center;
             font-size: 1.25rem;
             font-weight: bold;
             display: none; /* Initially hidden */
         }
-
         @media (max-width: 600px) {
             .digit-box {
                 width: 2.5rem;
@@ -102,12 +91,10 @@
                 font-size: 1.25rem;
                 margin: 0.25rem;
             }
-
             .submit-button, .send-again-button {
                 padding: 0.5rem 1rem;
                 font-size: 0.875rem;
             }
-
             .timer {
                 font-size: 1rem;
             }
@@ -124,16 +111,16 @@
 
     <!-- Main form container -->
     <div class="form-container">
-        <form class="animated-form" method="POST" onsubmit="return handleSubmit(event)">
+        <form class="animated-form" id="verificationForm" method="POST" action="/verifyEmail">
             <h1 class="header" id="civicConnect">Enter 6 digit number</h1>
             <div class="digit-container">
                 <!-- Inputs for the 6-digit verification code -->
-                <input type="text" class="digit-box" id="digit1" maxlength="1" required oninput="moveToNext(this, 'digit2')" onkeydown="handleBackspace(event, 'digit1')">
-                <input type="text" class="digit-box" id="digit2" maxlength="1" required oninput="moveToNext(this, 'digit3')" onkeydown="handleBackspace(event, 'digit1')">
-                <input type="text" class="digit-box" id="digit3" maxlength="1" required oninput="moveToNext(this, 'digit4')" onkeydown="handleBackspace(event, 'digit2')">
-                <input type="text" class="digit-box" id="digit4" maxlength="1" required oninput="moveToNext(this, 'digit5')" onkeydown="handleBackspace(event, 'digit3')">
-                <input type="text" class="digit-box" id="digit5" maxlength="1" required oninput="moveToNext(this, 'digit6')" onkeydown="handleBackspace(event, 'digit4')">
-                <input type="text" class="digit-box" id="digit6" maxlength="1" required oninput="checkSubmit()" onkeydown="handleBackspace(event, 'digit5')">
+                <input type="text" class="digit-box" id="digit1" name="digit1" maxlength="1" required oninput="moveToNext(this, 'digit2')" onkeydown="handleBackspace(event, 'digit1')">
+                <input type="text" class="digit-box" id="digit2" name="digit2" maxlength="1" required oninput="moveToNext(this, 'digit3')" onkeydown="handleBackspace(event, 'digit1')">
+                <input type="text" class="digit-box" id="digit3" name="digit3" maxlength="1" required oninput="moveToNext(this, 'digit4')" onkeydown="handleBackspace(event, 'digit2')">
+                <input type="text" class="digit-box" id="digit4" name="digit4" maxlength="1" required oninput="moveToNext(this, 'digit5')" onkeydown="handleBackspace(event, 'digit3')">
+                <input type="text" class="digit-box" id="digit5" name="digit5" maxlength="1" required oninput="moveToNext(this, 'digit6')" onkeydown="handleBackspace(event, 'digit4')">
+                <input type="text" class="digit-box" id="digit6" name="digit6" maxlength="1" required oninput="checkSubmit()" onkeydown="handleBackspace(event, 'digit5')">
             </div>
 
             <!-- Buttons and timer -->
@@ -166,18 +153,6 @@
                 }
             }, 1000);
             // Add logic to resend verification code here
-        }
-
-        // Handle form submission, capturing the 6-digit code
-        function handleSubmit(event) {
-            event.preventDefault();
-            const inputs = document.querySelectorAll('.digit-box');
-            let code = '';
-            inputs.forEach(input => {
-                code += input.value;
-            });
-            console.log(parseInt(code, 10)); // Replace with server-side logic if needed
-            return false;
         }
 
         // Automatically move to the next field when max length is reached

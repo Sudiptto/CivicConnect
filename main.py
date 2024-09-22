@@ -7,7 +7,7 @@ from analysis import *
 from prompts import *
 from emailsend import email_bp  # Import the blueprint from emailsend.py
 from models import *  # Import the db and User model
-
+import random
 
 # Configure Flask-Mail settings
 app.config["MAIL_SERVER"] = 'smtp.gmail.com'
@@ -156,19 +156,41 @@ def email():
 
 
 # Verify email
-@app.route('/verifyEmail')
+# Verify email
+@app.route('/verifyEmail', methods=['GET', 'POST'])
 def verifyEmail():
     if not session.get('valid_zip_state'):
         errorMessage = 'Incomplete'
-        return render_template('error.html', errorMessage = errorMessage)
+        return render_template('error.html', errorMessage=errorMessage)
 
     if not session.get('validSubmit'):
         errorMessage = 'NoSubmit'
-        return render_template('error.html', errorMessage = errorMessage)
+        return render_template('error.html', errorMessage=errorMessage)
     
-    # note need a second route to see if the email data was collected 
+    verification_code = session.get('verification_code')
+    email = session.get('email')
+    repEmails = session.get('repEmails')
+    repNames = session.get('repNames')
+    subject = session.get('subject')
+    prompt = session.get('prompt')
+    firstName = session.get('firstName')
 
-    return render_template('verification.html')
+    print("Verification code (verifyEmail): ", verification_code)
+
+    if request.method == 'POST':
+        # Gather user input from the form
+        user_code = ''.join([request.form.get(f'digit{i}') for i in range(1, 7)])
+
+        # Verify the code
+        if user_code == str(verification_code):
+            # Handle successful verification (e.g., send email, redirect)
+            return "WORKED"
+        else:
+            pass
+
+    # Render the verification page with the verification code
+    return render_template('verification.html', verification_code=verification_code, email=email, repEmails=repEmails, repNames=repNames, subject=subject, prompt=prompt, firstName=firstName)
+
 
 # email for verified email addresses
 @app.route('/verifyEmailSuccess/<verified>')
@@ -196,21 +218,27 @@ def email_sent():
     prompt = data['prompt']
     firstName = session.get("first_name")
 
-    reasoning = "sendOnBehalf"
+    print("Email sent has been hit")
+    # Generate a random 6-digit verification code
+    verification_code = random.randint(100000, 999999)
 
-    # Generate a unique token
-    verification_token = secrets.token_hex(16)
-    token_data[verification_token] = {
-            'email': email,
-            'repEmails': repEmails,
-            'repNames': repNames,
-            'subject': subject,
-            'prompt': prompt,
-            'firstName': firstName
+    print("Verification code: ", verification_code)
 
-    }
+    # Store the relevant data in the session (no need to use tokens anymore)
+    session['verification_code'] = verification_code
+    session['email'] = email
+    session['repEmails'] = repEmails
+    session['repNames'] = repNames
+    session['subject'] = subject
+    session['prompt'] = prompt
+    session['firstName'] = firstName
 
-    return redirect(url_for('email_bp.send_verification_email_route', email=email, token=verification_token, reasoning=reasoning))
+    # Send the verification email
+    send_verification_email(email, verification_code)
+
+    # Return JSON indicating success
+    return jsonify({'status': 'success', 'redirect_url': url_for('verifyEmail')})
+
 
 
 # from the email page get the sent data from mailto (not as reliable as sending through civic connect) -> check email.html for the fetch api
@@ -226,6 +254,49 @@ def email_sent_mailto():
 def exit():
     session.clear()
     return redirect(url_for('home'))
+
+
+# function for sending email
+def send_verification_email(email, randomNumber):
+    # works -> send a verification email out to the user
+    #print("Testing again for sendOnBehalf ", verification_data)
+    
+    body = f'''
+        <div style="font-family:'Times New Roman', serif; padding:2rem; background-color:#f4f4f4;">
+            <h1 style="text-align:center; color:#222; font-size:2rem; font-weight:bold; margin-bottom:2rem;">
+                Verify Your Email
+            </h1>
+            <p style="font-size:1.1rem; color:#333; line-height:1.8;">
+                Here is your 6-digit verification code: 
+                <strong style="font-size:1.5rem; color:#003366;">{randomNumber}</strong>
+                <br><br>
+                Please enter this code on the verification page to confirm your email. If you do not receive the code within 5 minutes, kindly try again. We are working to improve email delivery times.
+            </p>
+
+            <hr style="border:0; border-top:1px solid #e0e0e0; margin:2rem 0;">
+            <div style="text-align:center; font-size:1rem; color:#555; line-height:1.8;">
+                <p style="margin-bottom:1.5rem;">
+                    <a href="https://civicconnect.pythonanywhere.com/" 
+                    style="color:#003366; text-decoration:underline;"
+                    onmouseover="this.style.color='#0056b3';" 
+                    onmouseout="this.style.color='#003366';">
+                        Use CivicConnect
+                    </a>
+                </p>
+                <p>
+                    <a href="https://www.linkedin.com/company/civiccommunication" 
+                    style="color:#003366; text-decoration:underline;"
+                    onmouseover="this.style.color='#0056b3';" 
+                    onmouseout="this.style.color='#003366';">
+                        Follow us on LinkedIn
+                    </a>
+                </p>
+            </div>
+        </div>
+    '''
+    subject = 'Verify Your Email with a 6-Digit Code!'
+    msg = Message(subject, recipients=[email], html=body)
+    mail.send(msg)
 
 
 # INVALID URL
