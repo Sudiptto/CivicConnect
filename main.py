@@ -155,43 +155,6 @@ def email():
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
 
 
-# Verify email
-# Verify email
-@app.route('/verifyEmail', methods=['GET', 'POST'])
-def verifyEmail():
-    if not session.get('valid_zip_state'):
-        errorMessage = 'Incomplete'
-        return render_template('error.html', errorMessage=errorMessage)
-
-    if not session.get('validSubmit'):
-        errorMessage = 'NoSubmit'
-        return render_template('error.html', errorMessage=errorMessage)
-    
-    verification_code = session.get('verification_code')
-    email = session.get('email')
-    repEmails = session.get('repEmails')
-    repNames = session.get('repNames')
-    subject = session.get('subject')
-    prompt = session.get('prompt')
-    firstName = session.get('firstName')
-
-    print("Verification code (verifyEmail): ", verification_code)
-
-    if request.method == 'POST':
-        # Gather user input from the form
-        user_code = ''.join([request.form.get(f'digit{i}') for i in range(1, 7)])
-
-        # Verify the code
-        if user_code == str(verification_code):
-            # Handle successful verification (e.g., send email, redirect)
-            return "WORKED"
-        else:
-            pass
-
-    # Render the verification page with the verification code
-    return render_template('verification.html', verification_code=verification_code, email=email, repEmails=repEmails, repNames=repNames, subject=subject, prompt=prompt, firstName=firstName)
-
-
 # email for verified email addresses
 @app.route('/verifyEmailSuccess/<verified>')
 def verifyEmailSuccess(verified):
@@ -204,7 +167,6 @@ def verifyEmailSuccess(verified):
         return redirect(url_for('home'))
 
     return render_template('emailVerified.html')
-
 
 # get the email from the fetch request from the email page  (javascript) and print out the email
 @app.route('/email_sent', methods=['POST'])
@@ -233,13 +195,103 @@ def email_sent():
     session['prompt'] = prompt
     session['firstName'] = firstName
 
+    # make a session saying verification email has been sent
+    session['verification_email_sent'] = True
+
     # Send the verification email
     send_verification_email(email, verification_code)
 
     # Return JSON indicating success
     return jsonify({'status': 'success', 'redirect_url': url_for('verifyEmail')})
 
+# Verify email
+@app.route('/verifyEmail', methods=['GET', 'POST'])
+def verifyEmail():
 
+    # verify if user filled out correct information
+    if not session.get('valid_zip_state'):
+        errorMessage = 'Incomplete'
+        return render_template('error.html', errorMessage=errorMessage)
+
+    if not session.get('validSubmit'):
+        errorMessage = 'NoSubmit'
+        return render_template('error.html', errorMessage=errorMessage)
+
+    if not session.get('verification_email_sent'):
+        errorMessage = 'NoSubmitEmail'
+        return render_template('error.html', errorMessage=errorMessage)
+    
+    # grab session data
+    verification_code = session.get('verification_code')
+    email = session.get('email')
+    repEmails = session.get('repEmails')
+    repNames = session.get('repNames')
+    subject = session.get('subject')
+    prompt = session.get('prompt')
+    firstName = session.get('firstName')
+
+    # create session
+    session['send_again'] = 0
+
+    print("Verification code (verifyEmail): ", verification_code)
+
+    if request.method == 'POST':
+        # Gather user input from the form
+        user_code = ''.join([request.form.get(f'digit{i}') for i in range(1, 7)])
+
+        # Verify the code
+        if user_code == str(verification_code):
+            # Handle successful verification (e.g., send email, redirect)
+            return "WORKED"  # Replace this with your success handling
+        else:
+            flash("TRY AGAIN, WRONG CODE")
+            return redirect(url_for('verifyEmail'))  # Redirect to the same route to show the message
+
+    # Render the verification page with the verification code
+    return render_template('verification.html', verification_code=verification_code, email=email, repEmails=repEmails, repNames=repNames, subject=subject, prompt=prompt, firstName=firstName)
+
+
+# Send the verification email again
+@app.route('/send_again', methods=['POST'])
+def send_again():
+    data = request.get_json()
+    email = data['email']
+
+    # create session variable to track how many time send_again was used
+    session['send_again'] = session.get('send_again') + 1
+    print(session.get('send_again'))
+
+    if session['send_again'] >= 3:
+        print("LOL")
+        # clear session
+        session.clear()
+
+        #make a session just for the emailMax
+        session['valid_emailMax'] = True
+
+        # Return a JSON response instructing the frontend to redirect
+        return jsonify({'status': 'redirect', 'url': '/emailMax'})
+
+    # Generate a new 6-digit verification code
+    new_verification_code = random.randint(100000, 999999)
+
+    # Update the session with the new verification code
+    session['verification_code'] = new_verification_code
+
+    # Send the verification email with the new code
+    #send_verification_email(email, new_verification_code)
+
+    # Return a JSON response indicating success
+    return jsonify({'status': 'success'})
+
+@app.route('/emailMax')
+def emailMax():
+
+    if not session.get('valid_emailMax'):
+        errorMessage = 'Incomplete'
+        return render_template('error.html', errorMessage=errorMessage)
+
+    return render_template('emailMax.html')
 
 # from the email page get the sent data from mailto (not as reliable as sending through civic connect) -> check email.html for the fetch api
 @app.route('/email_sent_mailto', methods=['POST'])

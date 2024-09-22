@@ -109,10 +109,20 @@
         <div class="box" id="box4"></div>
     </div>
 
+    <!-- Flash message display -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>
+                alert("{{ messages[0] }}");
+            </script>
+        {% endif %}
+    {% endwith %}
+
     <!-- Main form container -->
     <div class="form-container">
         <form class="animated-form" id="verificationForm" method="POST" action="/verifyEmail">
             <h1 class="header" id="civicConnect">Enter 6 digit number</h1>
+            <p>Note may take a second or two for the email to appear in inbox, please check spam to!</p>
             <div class="digit-container">
                 <!-- Inputs for the 6-digit verification code -->
                 <input type="text" class="digit-box" id="digit1" name="digit1" maxlength="1" required oninput="moveToNext(this, 'digit2')" onkeydown="handleBackspace(event, 'digit1')">
@@ -130,7 +140,7 @@
             </div>
 
             <!-- Centered timer below buttons -->
-            <span class="timer" id="timer">Send email again in: 10</span> <!-- Timer starts at 10 seconds for testing -->
+            <span class="timer" id="timer">Send email again in: 2</span> <!-- Timer starts at 10 seconds for testing -->
         </form>
     </div>
 
@@ -142,7 +152,7 @@
             const timer = document.getElementById('timer');
             sendAgainButton.disabled = true;
             timer.style.display = 'block'; // Show timer
-            let countdown = 10; // Set to 10 seconds for testing
+            let countdown = 2; // Set to 10 seconds for testing
             const interval = setInterval(() => {
                 countdown--;
                 timer.textContent = `Send email again in: ${countdown}`; // Update timer text
@@ -151,9 +161,31 @@
                     sendAgainButton.disabled = false;
                     timer.style.display = 'none'; // Hide timer when done
                 }
-            }, 1000);
-            // Add logic to resend verification code here
+            }, 100);
+
+            // Make AJAX call to resend the verification email
+            fetch('/send_again', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: "{{ email }}" })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Verification email sent again.');
+                } else if (data.status === 'redirect') {
+                    // Redirect to the provided URL if the session count is 3 or more
+                    window.location.href = data.url;
+                } else {
+                    alert('Failed to send email. Please try again.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
+
+
 
         // Automatically move to the next field when max length is reached
         function moveToNext(current, nextFieldID) {
@@ -186,7 +218,7 @@
             const sendAgainButton = document.getElementById('sendAgainButton');
             const timer = document.getElementById('timer');
             timer.style.display = 'block'; // Show timer
-            let countdown = 10; // Set to 10 seconds for testing
+            let countdown = 2; // Set to 10 seconds for testing
             const interval = setInterval(() => {
                 countdown--;
                 timer.textContent = `Send email again in: ${countdown}`; // Update timer text
