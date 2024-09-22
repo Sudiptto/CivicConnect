@@ -8,6 +8,7 @@ from prompts import *
 from emailsend import email_bp  # Import the blueprint from emailsend.py
 from models import *  # Import the db and User model
 import random
+from brevoSend import *
 
 # Configure Flask-Mail settings
 app.config["MAIL_SERVER"] = 'smtp.gmail.com'
@@ -241,11 +242,53 @@ def verifyEmail():
 
         # Verify the code
         if user_code == str(verification_code):
-            # Handle successful verification (e.g., send email, redirect)
-            return "WORKED"  # Replace this with your success handling
+            body = f'''
+                <div style="background-color:#f9f9f9;padding:2rem;font-family:Arial,sans-serif;">
+                    <div style="background-color:#fff;padding:2rem;border-radius:0.625rem;box-shadow:0 0.25rem 0.5rem rgba(0,0,0,0.1);">
+                        <h1 style="text-align:center;color:#222;font-size:2.5rem;font-weight:bold;margin-bottom:1.5rem;text-decoration:underline;">
+                            {subject}
+                        </h1>
+                        <p style="font-size:1rem;color:#555;"><strong>Email:</strong> {email}</p>
+                        <p style="font-size:1rem;color:#555;"><strong>Prompt:</strong></p>
+                        <div style="padding-left:1.25rem;font-family:'Times New Roman', serif;font-size:1.2rem;line-height:2rem;color:#333;background-color:#f0f0f0;border-left:0.25rem solid #007bff;padding:1rem;">
+                            {prompt[:-14]}
+                        </div>
+                        <p style="font-size:0.875rem;color:#777;margin-top:1.5rem;">
+                            This email was sent via the CivicConnect email on behalf of <strong>{email}</strong>.
+                        </p>
+                        <hr style="border:0;border-top:0.0625rem solid #e0e0e0;margin:1.5rem 0;">
+                        <p style="text-align:center;font-size:1rem;color:#555;">
+                            <a href="https://civicconnect.pythonanywhere.com/" style="background-color:#007bff;color:#fff;padding:0.5rem 1rem;border-radius:0.25rem;text-decoration:none;">
+                                Use CivicConnect Here
+                            </a>
+                        </p>
+                        <p style="text-align:center;font-size:1rem;color:#555;">
+                            <a href="https://www.linkedin.com/company/civiccommunication" style="background-color:#007bff;color:#fff;padding:0.5rem 1rem;border-radius:0.25rem;text-decoration:none;">
+                                Follow us on LinkedIn to see the journey
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+            '''
+            sender = {"name":"Civic Connect", "email":"send@civicconnect.net"}
+            cc = [{"email": email, "name": firstName}]
+
+            # get back array of objects for repEmails
+            repEmailObject = createEmailList(repEmails, repNames)
+
+            # Reply to email
+            reply_to = {"email":"civic@civicconnect.net","name":"Civic Connect"}
+
+            sendEmailThroughBrevo(sender, subject, body, repEmailObject, cc, reply_to)
+
+            session.clear()
+
+            return render_template("end.html") # Replace this with your success handling
+            
         else:
             flash("TRY AGAIN, WRONG CODE")
-            return redirect(url_for('verifyEmail'))  # Redirect to the same route to show the message
+            return redirect(url_for('verifyEmail'))  
 
     # Render the verification page with the verification code
     return render_template('verification.html', verification_code=verification_code, email=email, repEmails=repEmails, repNames=repNames, subject=subject, prompt=prompt, firstName=firstName)
@@ -275,13 +318,10 @@ def send_again():
     # Generate a new 6-digit verification code
     new_verification_code = random.randint(100000, 999999)
 
-    # Update the session with the new verification code
     session['verification_code'] = new_verification_code
 
-    # Send the verification email with the new code
-    #send_verification_email(email, new_verification_code)
+    send_verification_email(email, new_verification_code)
 
-    # Return a JSON response indicating success
     return jsonify({'status': 'success'})
 
 @app.route('/emailMax')
@@ -347,8 +387,16 @@ def send_verification_email(email, randomNumber):
         </div>
     '''
     subject = 'Verify Your Email with a 6-Digit Code!'
-    msg = Message(subject, recipients=[email], html=body)
-    mail.send(msg)
+
+    # send through BREVO:
+    sender = {"name":"Civic Connect", "email":"send@civicconnect.net"}
+
+    to = [{"email": email, "name": "User"}]
+
+    # Brevo function
+    sendEmailVerificationEmail(sender, subject, body, to)
+
+
 
 
 # INVALID URL
