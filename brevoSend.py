@@ -65,3 +65,51 @@ def createEmailList(emails, names):
 
 # Test the function
 #print(createEmailList(["biswassudiptto@gmail.com", "max@gmail.com", "mad@gmail.com"], ["Sudiptto Biswas", "Max", "Mad"])) # should return a list of dictionaries
+
+# function for sending email
+def send_verification_email(email, randomNumber):
+    # works -> send a verification email out to the user
+    #print("Testing again for sendOnBehalf ", verification_data)
+    
+    body = f'''
+        <div style="font-family:'Times New Roman', serif; padding:2rem; background-color:#f4f4f4;">
+            <h1 style="text-align:center; color:#222; font-size:2rem; font-weight:bold; margin-bottom:2rem;">
+                Verify Your Email
+            </h1>
+            <p style="font-size:1.1rem; color:#333; line-height:1.8;">
+                Here is your 6-digit verification code: 
+                <strong style="font-size:1.5rem; color:#003366;">{randomNumber}</strong>
+                <br><br>
+                Please enter this code on the verification page to confirm your email. If you do not receive the code within 5 minutes, kindly try again. We are working to improve email delivery times.
+            </p>
+
+            <hr style="border:0; border-top:1px solid #e0e0e0; margin:2rem 0;">
+            <div style="text-align:center; font-size:1rem; color:#555; line-height:1.8;">
+                <p style="margin-bottom:1.5rem;">
+                    <a href="https://civicconnect.pythonanywhere.com/" 
+                    style="color:#003366; text-decoration:underline;"
+                    onmouseover="this.style.color='#0056b3';" 
+                    onmouseout="this.style.color='#003366';">
+                        Use CivicConnect
+                    </a>
+                </p>
+                <p>
+                    <a href="https://www.linkedin.com/company/civiccommunication" 
+                    style="color:#003366; text-decoration:underline;"
+                    onmouseover="this.style.color='#0056b3';" 
+                    onmouseout="this.style.color='#003366';">
+                        Follow us on LinkedIn
+                    </a>
+                </p>
+            </div>
+        </div>
+    '''
+    subject = 'Verify Your Email with a 6-Digit Code!'
+
+    # send through BREVO:
+    sender = {"name":"Civic Connect", "email":"send@civicconnect.net"}
+
+    to = [{"email": email, "name": "User"}]
+
+    # Brevo function
+    sendEmailVerificationEmail(sender, subject, body, to)

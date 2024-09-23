@@ -2,10 +2,10 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from app import *
 from allZipcode import *
 import secrets
+from addData import *
 from passwords import *
 from analysis import *
 from prompts import *
-from emailsend import email_bp  # Import the blueprint from emailsend.py
 from models import *  # Import the db and User model
 import random
 from brevoSend import *
@@ -21,8 +21,6 @@ app.config["MAIL_PASSWORD"] = sendPassword
 app.config["MAIL_DEFAULT_SENDER"] = 'your_email@example.com'
 mail.init_app(app)
 
-# Register the email_bp Blueprint with the app
-app.register_blueprint(email_bp)
 
 # for re-captcha
 RECAPTCHA_SECRET_KEY = privateCaptcha  
@@ -125,8 +123,6 @@ def causes():
     return render_template('causes.html', firstName = first_name, nameList = nameList, emailList = emailList, allPrompts = getAllPrompts(first_name))
 
 
-
-# works
 @app.route('/email', methods=['GET', 'POST'])
 def email():
     if not session.get('valid_zip_state'):
@@ -155,19 +151,6 @@ def email():
 
     return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
 
-
-# email for verified email addresses
-@app.route('/verifyEmailSuccess/<verified>')
-def verifyEmailSuccess(verified):
-    #print(verified)
-    if verified == 'true':
-        # ISSUE FROM HERE THIS IS WHERE LAG HAPPENS
-        print('Email verified! -> valid!! ')
-    else:
-        print("REDIRECT")
-        return redirect(url_for('home'))
-
-    return render_template('emailVerified.html')
 
 # get the email from the fetch request from the email page  (javascript) and print out the email
 @app.route('/email_sent', methods=['POST'])
@@ -282,6 +265,14 @@ def verifyEmail():
 
             sendEmailThroughBrevo(sender, subject, body, repEmailObject, cc, reply_to)
 
+            # ADD DATA
+            add_unique_email(email, zipCode)
+            add_or_increment_topic(subject)
+            update_zipcode_data(zipCode, subject)
+
+            for rep in repNames:
+                update_representative_data(rep, subject)
+
             session.clear()
 
             return render_template("end.html") # Replace this with your success handling
@@ -346,56 +337,6 @@ def email_sent_mailto():
 def exit():
     session.clear()
     return redirect(url_for('home'))
-
-
-# function for sending email
-def send_verification_email(email, randomNumber):
-    # works -> send a verification email out to the user
-    #print("Testing again for sendOnBehalf ", verification_data)
-    
-    body = f'''
-        <div style="font-family:'Times New Roman', serif; padding:2rem; background-color:#f4f4f4;">
-            <h1 style="text-align:center; color:#222; font-size:2rem; font-weight:bold; margin-bottom:2rem;">
-                Verify Your Email
-            </h1>
-            <p style="font-size:1.1rem; color:#333; line-height:1.8;">
-                Here is your 6-digit verification code: 
-                <strong style="font-size:1.5rem; color:#003366;">{randomNumber}</strong>
-                <br><br>
-                Please enter this code on the verification page to confirm your email. If you do not receive the code within 5 minutes, kindly try again. We are working to improve email delivery times.
-            </p>
-
-            <hr style="border:0; border-top:1px solid #e0e0e0; margin:2rem 0;">
-            <div style="text-align:center; font-size:1rem; color:#555; line-height:1.8;">
-                <p style="margin-bottom:1.5rem;">
-                    <a href="https://civicconnect.pythonanywhere.com/" 
-                    style="color:#003366; text-decoration:underline;"
-                    onmouseover="this.style.color='#0056b3';" 
-                    onmouseout="this.style.color='#003366';">
-                        Use CivicConnect
-                    </a>
-                </p>
-                <p>
-                    <a href="https://www.linkedin.com/company/civiccommunication" 
-                    style="color:#003366; text-decoration:underline;"
-                    onmouseover="this.style.color='#0056b3';" 
-                    onmouseout="this.style.color='#003366';">
-                        Follow us on LinkedIn
-                    </a>
-                </p>
-            </div>
-        </div>
-    '''
-    subject = 'Verify Your Email with a 6-Digit Code!'
-
-    # send through BREVO:
-    sender = {"name":"Civic Connect", "email":"send@civicconnect.net"}
-
-    to = [{"email": email, "name": "User"}]
-
-    # Brevo function
-    sendEmailVerificationEmail(sender, subject, body, to)
-
 
 
 
