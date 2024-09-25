@@ -14,12 +14,12 @@
 
             <!-- Recipients -->
             <div>
-                <h3 style="color: #000; margin-bottom: 5px;">Recipients:</h3>
+                <h3 style="color: #000; margin-bottom: 5px;">Choose Representative!</h3>
                 <form id="emailForm">
-                    {% for email in emailList %}
+                    {% for email in allReps %}
                         <div class="emailBox">
                             <input type="checkbox" class="email-checkbox" id="{{email}}" name="recipient_emails" value="{{email}}">
-                            <label for="{{email}}" class="allEmails">{{email}}</label>
+                            <label for="{{email}}" class="allEmails">{{allReps[email]}}</label>
                         </div>
                     {% endfor %}
                     <button type="submit" id="submit-button" class="repSubmit">Submit</button>
@@ -43,7 +43,7 @@
             </div>
 
             <!-- Send options -->
-            <a id="send-email-button" class="send-email-button" action="/">Send Email (Best On Mobile)</a>
+            <a id="send-email-button" class="send-email-button">Send Email (Best On Mobile)</a>
             <button class="send-email-button" onclick="sendEmail()" id="sendMail">Can't send? Send through us!</button>
             
             <form method="POST" action="{{ url_for('exit') }}">
@@ -57,6 +57,7 @@
     <script>
         // Read the allReps data from Jinja
         var allReps = {{ allReps|tojson|safe }};
+        var emailsRanOut = {{emailRunOut|tojson|safe}};
         var repEmails = [];
         var repNames = [];
 
@@ -101,8 +102,38 @@
             console.log(allRepEmails, allRepNames);
         });
 
+        // check if there are emails ran out, true -> ran out, false -> still more
+        function checkEmails(){
+            return emailsRanOut;
+        }
+
         // Send email via server
         function sendEmail() {
+
+            if (checkEmails()){
+                alert("Sorry, we have ran out of emails for today. Please try again tomorrow.");
+                
+                // send a request to this /ifEmailRanOut route and than redirect to the ranOut page
+                fetch('/ifEmailRanOut', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'redirect') {
+                        // Use the correct key 'url' instead of 'redirect_url'
+                        console.log(data.url);  
+                        window.location.href = data.url;  // Redirect to the provided URL
+                    } else {
+                        console.error('Failed');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+
+                return;   
+            };
+
             if (repEmails.length === 0) {
                 alert("Please select at least one representative!");
                 return;

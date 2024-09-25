@@ -115,6 +115,33 @@ def send_verification_email(email, randomNumber):
     sendEmailVerificationEmail(sender, subject, body, to)
 
 
-# function to see how many emails are left
-def getRemainingEmails():
-    pass
+# function to see account data
+def getAccountData():
+    api_instance = sib_api_v3_sdk.AccountApi(sib_api_v3_sdk.ApiClient(configuration))
+    api_response = None
+    try:
+        api_response = api_instance.get_account()
+        #pprint(api_response)
+        
+    except ApiException as e:
+        print("Exception when calling AccountApi->get_account: %s\n" % e)
+
+    return api_response
+
+def getEmailRemaining():
+
+    userData = getAccountData()
+    emailsRemaining = userData.plan[0].credits
+    emailsRemaining = int(emailsRemaining)
+
+    return emailsRemaining
+
+# if there are emails left
+def didEmailRanOut(emailsLeft):
+    if getEmailRemaining() <= emailsLeft:
+        return True
+    else:
+        return False
+
+#print(getAccountData())
+#print(getEmailRemaining())

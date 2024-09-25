@@ -148,8 +148,10 @@ def email():
     subject = session.get('causeSubject')
     prompt = subjectPrompt(subject, first_name, nameList, str(zipCode))
 
+    # check the amount of emails 
+    emailRunOut = didEmailRanOut(10)
 
-    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
+    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode, emailRunOut=emailRunOut)
 
 
 # get the email from the fetch request from the email page  (javascript) and print out the email
@@ -220,6 +222,16 @@ def verifyEmail():
     print("Verification code (verifyEmail): ", verification_code)
 
     if request.method == 'POST':
+
+        # check if Possible:
+        emailRunOut = didEmailRanOut(10)  
+
+        if emailRunOut:
+            session.clear()
+            # create a session for emailRanOut
+            session['valid_emailRanOut'] = True
+            return redirect(url_for("emailRanOut"))
+        
         # Gather user input from the form
         user_code = ''.join([request.form.get(f'digit{i}') for i in range(1, 7)])
 
@@ -280,6 +292,14 @@ def verifyEmail():
         else:
             flash("TRY AGAIN, WRONG CODE")
             return redirect(url_for('verifyEmail'))  
+        
+    emailRunOut = didEmailRanOut(10)
+
+    if emailRunOut:
+        session.clear()
+        # create a session for emailRanOut
+        session['valid_emailRanOut'] = True
+        return redirect(url_for("emailRanOut"))
 
     # Render the verification page with the verification code
     return render_template('verification.html', verification_code=verification_code, email=email, repEmails=repEmails, repNames=repNames, subject=subject, prompt=prompt, firstName=firstName)
@@ -291,9 +311,19 @@ def send_again():
     data = request.get_json()
     email = data['email']
 
+    emailRunOut = didEmailRanOut(10)
+
     # create session variable to track how many time send_again was used
     session['send_again'] = session.get('send_again') + 1
     print(session.get('send_again'))
+
+    # if emails ran out
+    if emailRunOut:
+        session.clear()
+        # create a session for emailRanOut
+        session['valid_emailRanOut'] = True
+        # re-direct to emailRanOut
+        return jsonify({'status': 'redirect', 'url': "/emailRanOut"})
 
     if session['send_again'] >= 2:
         print("LOL")
@@ -332,10 +362,21 @@ def email_sent_mailto():
 
     return jsonify(data)
 
+# route to send JSON data saying to redirect to /emailRanOut
+@app.route('/ifEmailRanOut', methods=['POST'])
+def ifEmailRanOut():
+    session.clear()
+    # create a session for emailRanOut
+    session['valid_emailRanOut'] = True
+    return jsonify({'status': 'redirect', 'url': '/emailRanOut'})
 
 # email route if we run out of email's for the day
 @app.route('/emailRanOut')
 def emailRanOut():
+    if not session.get('valid_emailRanOut'):
+        errorMessage = 'Incomplete'
+        return render_template('error.html', errorMessage=errorMessage)
+    
     return render_template('ranOut.html')
 
 # EXIT ROUTE -> WORKS
