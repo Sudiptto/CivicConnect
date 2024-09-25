@@ -148,8 +148,13 @@ def email():
     subject = session.get('causeSubject')
     prompt = subjectPrompt(subject, first_name, nameList, str(zipCode))
 
+    # check the amount of emails 
+    amountOfEmails = getEmailRemaining()
+    emailRunOut = False
+    if amountOfEmails <= 295:
+        emailRunOut = True
 
-    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode)
+    return render_template('email.html', emailList=emailList, firstName = first_name, subject=subject, prompt=prompt, allReps=allReps, zipCode=zipCode, emailRunOut=emailRunOut)
 
 
 # get the email from the fetch request from the email page  (javascript) and print out the email
@@ -332,10 +337,21 @@ def email_sent_mailto():
 
     return jsonify(data)
 
+# route to send JSON data saying to redirect to /emailRanOut
+@app.route('/ifEmailRanOut', methods=['POST'])
+def ifEmailRanOut():
+    session.clear()
+    # create a session for emailRanOut
+    session['valid_emailRanOut'] = True
+    return jsonify({'status': 'redirect', 'url': '/emailRanOut'})
 
 # email route if we run out of email's for the day
 @app.route('/emailRanOut')
 def emailRanOut():
+    if not session.get('valid_emailRanOut'):
+        errorMessage = 'Incomplete'
+        return render_template('error.html', errorMessage=errorMessage)
+    
     return render_template('ranOut.html')
 
 # EXIT ROUTE -> WORKS
