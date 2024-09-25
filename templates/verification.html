@@ -140,7 +140,7 @@
             </div>
 
             <!-- Centered timer below buttons -->
-            <span class="timer" id="timer">Send email again in: 2</span> <!-- Timer starts at 10 seconds for testing -->
+            <span class="timer" id="timer">Send email again in: 60</span> 
         </form>
     </div>
 
@@ -152,7 +152,7 @@
             const timer = document.getElementById('timer');
             sendAgainButton.disabled = true;
             timer.style.display = 'block'; // Show timer
-            let countdown = 2; // Set to 10 seconds for testing
+            let countdown = 60; 
             const interval = setInterval(() => {
                 countdown--;
                 timer.textContent = `Send email again in: ${countdown}`; // Update timer text
@@ -218,7 +218,7 @@
             const sendAgainButton = document.getElementById('sendAgainButton');
             const timer = document.getElementById('timer');
             timer.style.display = 'block'; // Show timer
-            let countdown = 2; // Set to 10 seconds for testing
+            let countdown = 60; // Set to 60
             const interval = setInterval(() => {
                 countdown--;
                 timer.textContent = `Send email again in: ${countdown}`; // Update timer text

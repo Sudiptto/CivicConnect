@@ -113,3 +113,8 @@ def send_verification_email(email, randomNumber):
 
     # Brevo function
     sendEmailVerificationEmail(sender, subject, body, to)
+
+
+# function to see how many emails are left
+def getRemainingEmails():
+    pass

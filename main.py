@@ -295,7 +295,7 @@ def send_again():
     session['send_again'] = session.get('send_again') + 1
     print(session.get('send_again'))
 
-    if session['send_again'] >= 3:
+    if session['send_again'] >= 2:
         print("LOL")
         # clear session
         session.clear()
@@ -331,6 +331,12 @@ def email_sent_mailto():
     data = request.get_json()
 
     return jsonify(data)
+
+
+# email route if we run out of email's for the day
+@app.route('/emailRanOut')
+def emailRanOut():
+    return render_template('ranOut.html')
 
 # EXIT ROUTE -> WORKS
 @app.route('/exit', methods=['POST', 'GET'])
