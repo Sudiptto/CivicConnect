@@ -136,6 +136,12 @@ def getEmailRemaining():
 
     return emailsRemaining
 
+# if there are emails left
+def didEmailRanOut(emailsLeft):
+    if getEmailRemaining() <= emailsLeft:
+        return True
+    else:
+        return False
 
 #print(getAccountData())
 #print(getEmailRemaining())
