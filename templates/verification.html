@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <title>Verification</title>
+    <style>
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            z-index: -1;
+        }
+        .box {
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #box1 { background-image: url('/static/images/img1.png'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        #box2 { background-image: url('/static/images/img2.jpg'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        #box3 { background-image: url('/static/images/img3.jpg'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        #box4 { background-image: url('/static/images/img4.png'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        .form-container {
+            box-shadow: 0 0 30px #000000;
+            width: 90%;
+            max-width: 550px;
+            border-radius: 25px;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 1;
+        }
+        .digit-box {
+            width: 3rem;
+            height: 3rem;
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .digit-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.625rem;
+        }
+        .submit-button, .send-again-button {
+            padding: 0.625rem 1.25rem;
+            font-size: 1rem;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s, font-size 0.3s;
+        }
+        .submit-button:hover, .send-again-button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+            font-size: 1.125rem;
+        }
+        .submit-button:disabled, .send-again-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .timer {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: none; /* Initially hidden */
+        }
+        @media (max-width: 600px) {
+            .digit-box {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.25rem;
+                margin: 0.25rem;
+            }
+            .submit-button, .send-again-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+            .timer {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="box" id="box1"></div>
+        <div class="box" id="box2"></div>
+        <div class="box" id="box3"></div>
+        <div class="box" id="box4"></div>
+    </div>
+
+    <!-- Flash message display -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>
+                alert("{{ messages[0] }}");
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main form container -->
+    <div class="form-container">
+        <form class="animated-form" id="verificationForm" method="POST" action="/verifyEmail">
+            <h1 class="header" id="civicConnect">Enter 6 digit number</h1>
+            <p>Note may take a second or two for the email to appear in inbox, please check spam to!</p>
+            <div class="digit-container">
+                <!-- Inputs for the 6-digit verification code -->
+                <input type="text" class="digit-box" id="digit1" name="digit1" maxlength="1" required oninput="moveToNext(this, 'digit2')" onkeydown="handleBackspace(event, 'digit1')">
+                <input type="text" class="digit-box" id="digit2" name="digit2" maxlength="1" required oninput="moveToNext(this, 'digit3')" onkeydown="handleBackspace(event, 'digit1')">
+                <input type="text" class="digit-box" id="digit3" name="digit3" maxlength="1" required oninput="moveToNext(this, 'digit4')" onkeydown="handleBackspace(event, 'digit2')">
+                <input type="text" class="digit-box" id="digit4" name="digit4" maxlength="1" required oninput="moveToNext(this, 'digit5')" onkeydown="handleBackspace(event, 'digit3')">
+                <input type="text" class="digit-box" id="digit5" name="digit5" maxlength="1" required oninput="moveToNext(this, 'digit6')" onkeydown="handleBackspace(event, 'digit4')">
+                <input type="text" class="digit-box" id="digit6" name="digit6" maxlength="1" required oninput="checkSubmit()" onkeydown="handleBackspace(event, 'digit5')">
+            </div>
+
+            <!-- Buttons and timer -->
+            <div class="button-container">
+                <button type="submit" class="submit-button" id="submitButton" disabled>Submit</button>
+                <button type="button" class="send-again-button" id="sendAgainButton" onclick="sendAgain()" disabled>Send Again</button>
+            </div>
+
+            <!-- Centered timer below buttons -->
+            <span class="timer" id="timer">Send email again in: 60</span> 
+        </form>
+    </div>
+
+    <!-- JavaScript functionality -->
+    <script>
+        // Simulate resending the verification code, with a 10-second timer
+        function sendAgain() {
+            const sendAgainButton = document.getElementById('sendAgainButton');
+            const timer = document.getElementById('timer');
+            sendAgainButton.disabled = true;
+            timer.style.display = 'block'; // Show timer
+            let countdown = 60; 
+            const interval = setInterval(() => {
+                countdown--;
+                timer.textContent = `Send email again in: ${countdown}`; // Update timer text
+                if (countdown === 0) {
+                    clearInterval(interval);
+                    sendAgainButton.disabled = false;
+                    timer.style.display = 'none'; // Hide timer when done
+                }
+            }, 100);
+
+            // Make AJAX call to resend the verification email
+            fetch('/send_again', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: "{{ email }}" })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Verification email sent again.');
+                } else if (data.status === 'redirect') {
+                    // Redirect to the provided URL if the session count is 3 or more
+                    window.location.href = data.url;
+                } else {
+                    alert('Failed to send email. Please try again.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+
+
+        // Automatically move to the next field when max length is reached
+        function moveToNext(current, nextFieldID) {
+            if (current.value.length >= current.maxLength) {
+                document.getElementById(nextFieldID).focus();
+            }
+        }
+
+        // Handle backspace to move focus to the previous field
+        function handleBackspace(event, prevFieldID) {
+            if (event.key === 'Backspace' && event.target.value === '') {
+                document.getElementById(prevFieldID).focus();
+            }
+        }
+
+        // Enable submit button when all input fields are filled
+        function checkSubmit() {
+            const inputs = document.querySelectorAll('.digit-box');
+            let allFilled = true;
+            inputs.forEach(input => {
+                if (input.value === '') {
+                    allFilled = false;
+                }
+            });
+            document.getElementById('submitButton').disabled = !allFilled;
+        }
+
+        // Enable "Send Again" button and start the 10-second timer on page load
+        window.onload = function() {
+            const sendAgainButton = document.getElementById('sendAgainButton');
+            const timer = document.getElementById('timer');
+            timer.style.display = 'block'; // Show timer
+            let countdown = 60; // Set to 60
+            const interval = setInterval(() => {
+                countdown--;
+                timer.textContent = `Send email again in: ${countdown}`; // Update timer text
+                if (countdown === 0) {
+                    clearInterval(interval);
+                    sendAgainButton.disabled = false;
+                    timer.style.display = 'none'; // Hide timer when done
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

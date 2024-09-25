@@ -1,9 +1,7 @@
 # note this is the final for analysing data and then posting it to the main python file 
-import pandas as pd
 from data import *
 from allZipcode import *
 from passwords import *
-import time
 # FUNCTIONS BELOW 
 """
 Collect all zipcode data with state data

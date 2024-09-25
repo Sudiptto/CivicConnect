@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <title>Email Ran Out</title>
+    <style>
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            z-index: -1;
+        }
+        .box {
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #box1 { background-image: url('/static/images/img1.png'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        #box2 { background-image: url('/static/images/img2.jpg'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        #box3 { background-image: url('/static/images/img3.jpg'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        #box4 { background-image: url('/static/images/img4.png'); -webkit-filter: grayscale(100%); filter: grayscale(100%); }
+        .form-container {
+            box-shadow: 0 0 30px #000000;
+            width: 90%;
+            max-width: 550px;
+            border-radius: 25px;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="box" id="box1"></div>
+        <div class="box" id="box2"></div>
+        <div class="box" id="box3"></div>
+        <div class="box" id="box4"></div>
+    </div>
+
+
+
+    <!-- Main form container -->
+    <div class="form-container">
+
+      <h1 class="header" id="civicConnect">Email Ran Out!</h1>
+      <p>Sorry, we ran out of emails for the day :( We currently run on about 300 emails a day and as we get more funding we hope to expand! Please check back on CivicConnect later today or tomorrow!</p>
+
+      <p>If you want, than follow our journey on LinkedIn by clicking: <a href="/https://www.linkedin.com/company/civiccommunication">HERE</a></p>
+
+
+
+      <p>Thanks again for using CivicConnect!</p>
+          
+    </div>
+
+    <!-- JavaScript functionality -->
+    <script></script>
+</body>
+</html>

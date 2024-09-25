@@ -1,207 +1,152 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles3.css') }}">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
     <title>Email</title>
-    <style>
-        
-    </style>
 </head>
 <body>
     <div class="container">
-      <div class="content-box">
-
+        <div class="content-box">
             <h1 class="heading">Hello {{firstName}}, please read over the email!</h1>
 
+            <!-- Recipients -->
+            <div>
+                <h3 style="color: #000; margin-bottom: 5px;">Recipients:</h3>
+                <form id="emailForm">
+                    {% for email in emailList %}
+                        <div class="emailBox">
+                            <input type="checkbox" class="email-checkbox" id="{{email}}" name="recipient_emails" value="{{email}}">
+                            <label for="{{email}}" class="allEmails">{{email}}</label>
+                        </div>
+                    {% endfor %}
+                    <button type="submit" id="submit-button" class="repSubmit">Submit</button>
+                </form>
+            </div>
 
-                <!-- Recipients -->
-                <div>
-                    <h3 style="color: #000; margin-bottom: 5px;">Recipients:</h3>
-                    <form id="emailForm">
-                        
-                        {% for email in emailList %}
-                            <div class="emailBox">
-                                <input type="checkbox" class="email-checkbox" id="{{email}}" name="recipient_emails" value="{{email}}">
-                                <label for="{{email}}" class="allEmails">{{email}}</label>
-                            </div>
-                        {% endfor %}
-                        <button type="submit" id="submit-button" class="repSubmit">Submit</button>
-                    </form>
-                </div>
+            <!-- Subject -->
+            <div>
+                <h3 style="color: #000; margin-bottom: 5px;">Subject:</h3>
+                <p class="subject">{{subject}}</p>
+            </div>
 
-                
-                <!--<h1>{{senators}}</h1>-->
-                <!-- Subject -->
-                <div>
-                    <h3 style="color: #000; margin-bottom: 5px;">Subject:</h3>
-                    <p class="subject">
-                        {{subject}}
+            <!-- Message -->
+            <div>
+                <h3 style="color: #000; margin-bottom: 5px;">Message:</h3>
+                <div class="message-container">
+                    <p class="message-text">
+                        <span id="greeting">Dear</span> {{ prompt[0]|safe }}
                     </p>
                 </div>
-        
-                <!-- Message -->
-                <div>
-                    <h3 style="color: #000; margin-bottom: 5px;">Message:</h3>
-                    <div class="message-container">
-                        <p class="message-text">
-                           <span id="greeting">Dear</span> {{ prompt[0]|safe }}
-                        </p>
-                    </div>
-                </div>
-                <!--SEND THE MAIL-->
-                <!--ISSUE ARRISED HERE, MAILTO -> LIMIT + HTML/CSS TAGS NOT SUPPORTED-->
-                <a id="send-email-button" class="send-email-button" action="/">Send Email (Best On Mobile)</a>
+            </div>
 
-                <!--Send through us-->
-                <button class="send-email-button" onclick="sendEmail()"  id="sendMail">Can't send? Send through us!</button>
-                
-                <br>
-                <form method="POST" action="{{ url_for('exit') }}">
-                    <button class="exitButton" href="/exit">Exit</button>
-                </form>
-                <p style="color: black; font-size: 0.7em;">Note: If your email provider isn't working than please copy and paste the information. (Best on Mobile)</p>
+            <!-- Send options -->
+            <a id="send-email-button" class="send-email-button" action="/">Send Email (Best On Mobile)</a>
+            <button class="send-email-button" onclick="sendEmail()" id="sendMail">Can't send? Send through us!</button>
+            
+            <form method="POST" action="{{ url_for('exit') }}">
+                <button class="exitButton" href="/exit">Exit</button>
+            </form>
+            <p style="color: black; font-size: 0.7em;">Note: If your email provider isn't working, please copy and paste the information. (Best on Mobile)</p>
         </div>
-      </div>
     </div>
 
-    <!--SCRIPT BELOW-->
-<script>
-    // read the allReps jinja data -> object 
-    var allReps = {{ allReps|tojson|safe }};
-    console.log(allReps);
-    // Get the send button
-    var sendButton = document.getElementById('sendMail');
-        
-    // global email and name variables 
-    var repEmails = [];
-    var repNames = [];
+    <!-- JavaScript at the bottom for better page load performance -->
+    <script>
+        // Read the allReps data from Jinja
+        var allReps = {{ allReps|tojson|safe }};
+        var repEmails = [];
+        var repNames = [];
 
-    // This tests works 
-    document.getElementById('submit-button').addEventListener('click', function(e) {
-        e.preventDefault();
-        // Push the represenative email data 
-        var allRepEmails = [];
-        var checkboxes = document.getElementsByClassName('email-checkbox');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].checked) {
-                allRepEmails.push(checkboxes[i].value);
+        // Handle form submission
+        document.getElementById('submit-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            var allRepEmails = [];
+            var checkboxes = document.getElementsByClassName('email-checkbox');
+
+            // Collect checked emails
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    allRepEmails.push(checkboxes[i].value);
+                }
             }
-        }
 
-        repEmails = allRepEmails;
+            repEmails = allRepEmails;
+            var allRepNames = [];
 
-        // push the rep name data
-        var allRepNames = [];
-        for(var i=0; i < allRepEmails.length; i++){
-            allRepNames.push(allReps[allRepEmails[i]]);
-        }
+            // Collect rep names
+            for (var i = 0; i < allRepEmails.length; i++) {
+                allRepNames.push(allReps[allRepEmails[i]]);
+            }
 
-        repNames = allRepNames;
-           
-        // the first two
-        // Replace the last comma with 'and'
-        var greetingNames = allRepNames.join(', ');
-        if (allRepNames.length > 1) {
-            var lastComma = greetingNames.lastIndexOf(',');
-            greetingNames = greetingNames.substring(0, lastComma) + ' and' + greetingNames.substring(lastComma + 1);
-        }
+            repNames = allRepNames;
 
-       
-        document.getElementById("greeting").textContent = "Dear " + greetingNames;
+            // Format greeting with names
+            var greetingNames = allRepNames.join(', ');
+            if (allRepNames.length > 1) {
+                var lastComma = greetingNames.lastIndexOf(',');
+                greetingNames = greetingNames.substring(0, lastComma) + ' and' + greetingNames.substring(lastComma + 1);
+            }
 
+            document.getElementById("greeting").textContent = "Dear " + greetingNames;
 
-        console.log(allRepNames)
-        alert(allRepEmails);
+            // Generate mailto link
+            var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + greetingNames + ".  {{ prompt[1] }}");
+            document.getElementById('send-email-button').setAttribute('href', mailtoLink);
 
+            // Log emails and names (for testing)
+            alert("Emails: " + allRepEmails + "\nNames: " + allRepNames);
+            console.log(allRepEmails, allRepNames);
+        });
 
-        // WAY TO MAKE THE EMAIL HERE  -> Test works put the senators names here 
-        var mailtoLink = 'mailto:' + allRepEmails.join(',') + '?subject=' + encodeURIComponent('{{ subject }}') + '&body=' + encodeURIComponent("Dear " + greetingNames + ".  {{ prompt[1] }}");
-        document.getElementById('send-email-button').setAttribute('href', mailtoLink);
-        document.getElementById('send-email-button').addEventListener('click', function() {
-            // send the data over to /email_sent_mailto
-            entry = {
-                subject: '{{ subject }}',
+        // Send email via server
+        function sendEmail() {
+            if (repEmails.length === 0) {
+                alert("Please select at least one representative!");
+                return;
+            }
+
+            var email = prompt("Please enter your email:");
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,64}$/;
+            if (!email || !emailRegex.test(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            // Prepare data for POST
+            var entry = {
+                email: email,
                 zipCode: '{{ zipCode }}',
-                route: 'MailTo'
-            }
+                repEmails: repEmails,
+                repNames: repNames,
+                subject: '{{ subject }}',
+                prompt: "Dear " + repNames.join(', ') + ". {{ prompt[1] }}"
+            };
 
-            fetch('/email_sent_mailto', {
+            fetch('/email_sent', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(entry),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(entry)
             })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Redirect on the client-side
+                    window.location.href = data.redirect_url;
+                } else {
+                    console.error('Failed to send email');
+                }
+            })
+            .catch(error => console.error('Error:', error));
 
-            // Delay the redirection by 2 seconds
-            setTimeout(function() {
-                window.location.href = '/exit';
-            }, 2000);
-        });
-        
-        //alert(allRepEmails);
-        
-    });
-
-    // send the email (option for the can't send? Send through us option )
-    function sendEmail() {
-        // do if statements to check if the user atleast picked ONE representative
-
-        if (repEmails.length === 0) {
-            alert("Please select at least one representative to send the email to! ");
-            return;
-        }
-
-        let email = prompt("Please enter your email: ");
-
-        // if statement to check if its a valid email (in the sense that at most 64 characters, one @ sign, check if the domain is valud doesnt have special cahracters, valid extension etc )
-        
-        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,64}$/;
-        if (email === null || email === "" || !emailRegex.test(email)) {
-            alert("Please enter a valid email address");
-            return;
-        }
-        
-        var greetingNames = repNames.join(', ');
-        if (repNames.length > 1) {
-            var lastComma = greetingNames.lastIndexOf(',');
-            greetingNames = greetingNames.substring(0, lastComma) + ' and' + greetingNames.substring(lastComma + 1);
-        }
-        
-        // send all the email data over 
-        var entry = {
-            email: email,
-            zipCode: '{{ zipCode }}',
-            repEmails: repEmails,
-            repNames: repNames,
-            subject: '{{ subject }}',
-            prompt: "Dear "+ greetingNames +  '. {{ prompt[1] }}',            
-        }
-
-        fetch('/email_sent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(entry),
-        })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-
-        alert("Email recieved! Check your inbox (make sure to check spam to) for an email confirmation, click the link to send the email. You should recieve a CC of the email sent. Thank you!");
-        
-        
-        window.location.href = "/exit";
+            alert("Email received! Check your inbox for confirmation. Thank you!");
+            alert("It may take a second or two for the next page to arrive, if the email is not in your inbox, please check your spam folder. ");
     }
 
-</script>
+    </script>
 
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
-  </body>
-  
-  </html>
+</body>
+</html>
